@@ -1,0 +1,4 @@
+name: HeavenLibrary
+version: '${project.version}'
+main: com.github.rfsmassacre.heavenlibrary.HeavenLibraryBungeeCord
+description: A library to help make plugins easier.

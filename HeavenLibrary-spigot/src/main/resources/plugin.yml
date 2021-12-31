@@ -1,0 +1,8 @@
+name: HeavenLibrary
+version: 1.0-SNAPSHOT
+main: com.github.rfsmassacre.spigot.HeavenLibrarySpigot
+api-version: 1.17
+prefix: HeavenLibrary
+authors: [ RFSMassacre ]
+description: A recreation using a new library of HeavenLib
+website: https://github.com/RFSMassacre
