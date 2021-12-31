@@ -51,6 +51,32 @@
                         </altDeploymentRepository>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>0.12</version>
+                    <configuration>
+                        <message>Maven artifacts for ${project.version}</message>
+                        <noJekyll>true</noJekyll>
+                        <outputDirectory>${project.build.directory}</outputDirectory>
+                        <branch>refs/heads/<em>origin</em>></branch>
+                        <includes>
+                            <include>**/*</include>
+                        </includes>
+                        <merge>true</merge>
+                        <repositoryName><em>Repository</em>></repositoryName>
+                        <repositoryOwner><em>RFSMassacre</em>></repositoryOwner>
+                        <server>github</server>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>site</goal>
+                            </goals>
+                            <phase>deploy</phase>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -64,7 +90,7 @@
     <distributionManagement>
         <repository>
             <id>internal.repo</id>
-            <name>RFSMassacre Repository</name>
+            <name>Repository</name>
             <url>file://${project.build.directory}/mvn-artifact</url>
         </repository>
     </distributionManagement>
