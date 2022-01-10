@@ -136,7 +136,7 @@ public abstract class H2Database<T> implements SQLData<T>
     {
         if (columns.length > 0)
         {
-            String sql = "CREATE TABLE IF NOT EXISTS" + tableName + " (" + String.join(", ",
+            String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + String.join(", ",
                     Arrays.asList(columns)) + ")";
             update(sql);
         }
