@@ -5,6 +5,8 @@ import com.github.rfsmassacre.heavenlibrary.interfaces.SQLData;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class SQLiteDatabase<T> implements SQLData<T>
 {
@@ -26,29 +28,21 @@ public abstract class SQLiteDatabase<T> implements SQLData<T>
     //Database information.
     private String absolutePath;
     private String database;
-    protected String tableName;
     private Connection connection;
-    protected String mainKey;
-    protected String[] columns; //This is assumed they are properly formatted.
 
     /**
      * Save database while instantiating.
      * @param absolutePath Path for databases file location.
      * @param database Name of database.
-     * @param tableName Name of table.
      */
-    public SQLiteDatabase(String absolutePath, String database, String tableName, String mainKey, String... columns)
+    public SQLiteDatabase(String absolutePath, String database)
     {
         this.absolutePath = absolutePath;
         this.database = database;
-        this.tableName = tableName;
-        this.mainKey = mainKey;
-        this.columns = columns;
 
         try
         {
             connect();
-            createTable();
         }
         catch (SQLException | ClassNotFoundException exception)
         {
@@ -119,17 +113,16 @@ public abstract class SQLiteDatabase<T> implements SQLData<T>
 
     /**
      * Retrieve object from database.
-     * @param id Identifier to retrieve from database.
+     * @param sql SQL statement.
      * @return Object from database.
      */
     @Override
-    public T query(String id)
+    public List<T> query(String sql)
     {
-        T t = null;
+        List<T> t = null;
 
         try
         {
-            String sql = "SELECT * FROM " + tableName + " WHERE " + mainKey + " = '" + id + "'";
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet result = statement.executeQuery();
             t = load(result);
@@ -144,22 +137,14 @@ public abstract class SQLiteDatabase<T> implements SQLData<T>
         return t;
     }
 
-    /**
-     * Create table for the first time.
-     */
     @Override
-    public void createTable()
+    public void createTable(String tableName, String... columns)
     {
-        String labels = String.join(", ", columns);
-        String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + labels + ")";
-
-        try
+        if (columns.length > 0)
         {
+            String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + String.join(", ",
+                    Arrays.asList(columns)) + ")";
             update(sql);
-        }
-        catch (Exception exception)
-        {
-            exception.printStackTrace();
         }
     }
 }

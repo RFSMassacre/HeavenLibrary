@@ -31,7 +31,6 @@ public abstract class H2Database<T> implements SQLData<T>
     //Database information.
     private String absolutePath;
     private String database;
-    protected String tableName;
     private Connection connection;
     protected String mainKey;
     protected List<String> columns; //This is assumed they are properly formatted.
@@ -40,13 +39,11 @@ public abstract class H2Database<T> implements SQLData<T>
      * Save database while instantiating.
      * @param absolutePath Path for databases file location.
      * @param database Name of database.
-     * @param tableName Name of table.
      */
-    public H2Database(String absolutePath, String database, String tableName, String mainKey, String... columns)
+    public H2Database(String absolutePath, String database, String mainKey, String... columns)
     {
         this.absolutePath = absolutePath;
         this.database = database;
-        this.tableName = tableName;
         this.mainKey = mainKey;
         this.columns = Arrays.asList(columns);
 
@@ -110,17 +107,16 @@ public abstract class H2Database<T> implements SQLData<T>
 
     /**
      * Retrieve object from database.
-     * @param id Identifier to retrieve from database.
+     * @param sql SQL statement.
      * @return Object from database.
      */
     @Override
-    public T query(String id)
+    public List<T> query(String sql)
     {
-        T t = null;
+        List<T> t = null;
 
         try
         {
-            String sql = "SELECT * FROM " + tableName + " WHERE " + mainKey + " = '" + id + "'";
             PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet result = statement.executeQuery();
             t = load(result);
@@ -135,22 +131,14 @@ public abstract class H2Database<T> implements SQLData<T>
         return t;
     }
 
-    /**
-     * Create table for the first time.
-     */
     @Override
-    public void createTable()
+    public void createTable(String tableName, String... columns)
     {
-        String labels = String.join(", ", columns);
-        String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + labels + ")";
-
-        try
+        if (columns.length > 0)
         {
+            String sql = "CREATE TABLE IF NOT EXISTS" + tableName + " (" + String.join(", ",
+                    Arrays.asList(columns)) + ")";
             update(sql);
-        }
-        catch (Exception exception)
-        {
-            exception.printStackTrace();
         }
     }
 }

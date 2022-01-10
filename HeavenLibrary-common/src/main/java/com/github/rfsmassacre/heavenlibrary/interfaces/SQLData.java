@@ -2,6 +2,7 @@ package com.github.rfsmassacre.heavenlibrary.interfaces;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Implement for manipulation of any kind of database.
@@ -29,16 +30,16 @@ public interface SQLData<T>
 
     /**
      * Query database to retrieve object .
-     * @param id Identifier to retrieve object from database.
+     * @param sql SQL statement
      * @return Object type from database.
      * @throws Exception Generic database exception.
      */
-    T query(String id) throws Exception;
+    List<T> query(String sql) throws Exception;
 
     /**
      * Create table to the database.
      */
-    void createTable();
+    void createTable(String tableName, String... columns);
 
     /**
      * Deconstruct object to save to database.
@@ -51,7 +52,7 @@ public interface SQLData<T>
      * @param result Result from query.
      * @return Object from database.
      */
-    T load(ResultSet result) throws SQLException;
+    List<T> load(ResultSet result) throws SQLException;
 
     /**
      * Delete object from the database.

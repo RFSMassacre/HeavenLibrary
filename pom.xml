@@ -64,7 +64,7 @@
 
     <distributionManagement>
         <repository>
-            <id>central</id>
+            <id>snapshots</id>
             <name>rfsmassacre-libs-snapshot</name>
             <url>https://rfsmassacre.jfrog.io/artifactory/rfsmassacre-libs-snapshot</url>
         </repository>
