@@ -20,7 +20,7 @@ public abstract class YamlStorage<T> implements FileData<YamlConfiguration>
      * @param folderName Name of folder.
      * @param fileName Name of file.
      */
-    public YamlStorage(JavaPlugin plugin, String folderName, String fileName)
+    public YamlStorage(JavaPlugin plugin, String folderName)
     {
         this.plugin = plugin;
         this.folderName = folderName;
