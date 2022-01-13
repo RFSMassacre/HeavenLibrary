@@ -116,7 +116,7 @@ public class Locale extends YamlManager
     public void sendActionMessage(Player player, String message, String... holders)
     {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                new TextComponent(TextComponent.fromLegacyText(replaceHolders(message, holders))));
+                new TextComponent(TextComponent.fromLegacyText(format(replaceHolders(message, holders)))));
     }
 
     /**
