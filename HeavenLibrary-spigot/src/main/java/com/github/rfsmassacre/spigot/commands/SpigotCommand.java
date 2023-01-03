@@ -46,7 +46,7 @@ public abstract class SpigotCommand implements TabExecutor
      */
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
-                            String[] args)
+                             String[] args)
     {
         if (subCommands.isEmpty())
         {
