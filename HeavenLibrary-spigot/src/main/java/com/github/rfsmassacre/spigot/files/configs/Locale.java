@@ -9,12 +9,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Handles retrieving all the values from a locale file.
  */
 public class Locale extends YamlManager
 {
-    private String fileName;
+    private final String fileName;
 
     /**
      * JavaPlugin and name of file will give back a fully updated YamlConfiguration.
@@ -41,7 +44,7 @@ public class Locale extends YamlManager
      * @param key Specified message assigned to.
      * @return Specified message in locale file from the key.
      */
-    private String getMessage(String key)
+    public String getMessage(String key)
     {
         String message = yaml.getString(key, defaultYaml.getString(key));
         if (message == null)
@@ -57,9 +60,14 @@ public class Locale extends YamlManager
      * @param usePrefix Use prefix with message.
      * @return Message in locale file from the key.
      */
-    private String getMessage(String key, boolean usePrefix)
+    public String getMessage(String key, boolean usePrefix)
     {
         String prefix = yaml.getString("prefix");
+        if (key == null || key.isEmpty())
+        {
+            return usePrefix ? prefix : "";
+        }
+
         String message = yaml.getString(key, defaultYaml.getString(key));
         if (message == null || message.isEmpty())
         {
@@ -75,7 +83,7 @@ public class Locale extends YamlManager
      * @param holders Absolutely must be divisible by two, or it will throw an error.
      * @return Formatted string.
      */
-    private String replaceHolders(String string, String[] holders)
+    public String replaceHolders(String string, String[] holders)
     {
         for (int holder = 0; holder < holders.length; holder += 2)
         {
@@ -90,9 +98,25 @@ public class Locale extends YamlManager
      * @param message Message to be sent.
      * @param holders Words to be replaced with values.
      */
+    public void sendMessage(CommandSender receiver, boolean usePrefix, String message, String...holders)
+    {
+        if (receiver == null)
+        {
+            return;
+        }
+
+        receiver.sendMessage(format(getMessage("", usePrefix) + replaceHolders(message, holders)));
+    }
+
+    /**
+     * Send formatted string to receiver.
+     * @param receiver Player or console receiving message.
+     * @param message Message to be sent.
+     * @param holders Words to be replaced with values.
+     */
     public void sendMessage(CommandSender receiver, String message, String...holders)
     {
-        receiver.sendMessage(format(replaceHolders(message, holders)));
+        sendMessage(receiver, false, message, holders);
     }
 
     /**
@@ -177,7 +201,12 @@ public class Locale extends YamlManager
      */
     public static String format(String string)
     {
-        return ChatColor.translateAlternateColorCodes('&', string);
+        return format(string, true, true, true, true, true, true, true);
+    }
+
+    public static String undoFormat(String string)
+    {
+        return string.replace("§", "&");
     }
 
     /**
@@ -192,7 +221,7 @@ public class Locale extends YamlManager
      * @return Formatted string with only enabled parts.
      */
     public static String format(String string, boolean color, boolean bold, boolean italic, boolean underline,
-                                boolean strikethrough, boolean magic)
+                                boolean strikethrough, boolean magic, boolean hex)
     {
         if (!color)
         {
@@ -202,6 +231,7 @@ public class Locale extends YamlManager
             string = string.replaceAll("\\&[a-f]", "");
             string = string.replaceAll("\\§[A-F]", "");
             string = string.replaceAll("\\&[A-F]", "");
+            string = string.replaceAll("\\§(r|R)", "");
             string = string.replaceAll("\\&(r|R)", "");
         }
         if (!bold)
@@ -230,7 +260,23 @@ public class Locale extends YamlManager
             string = string.replaceAll("\\&(k|K)", "");
         }
 
-        return format(string);
+        if (!hex)
+        {
+            string = string.replaceAll("\\§(#)", "");
+            string = string.replaceAll("\\&(#)", "");
+        }
+        else
+        {
+            Pattern HEX_PATTERN = Pattern.compile("(\\§|\\&)(#[A-Fa-f0-9]{6})");
+            Matcher matcher = HEX_PATTERN.matcher(string);
+            while (matcher.find())
+            {
+                string = string.replace(matcher.group(), "" + net.md_5.bungee.api.ChatColor.of(matcher.group()
+                        .replaceAll("(\\§|\\&)", "")));
+            }
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
     /**
@@ -251,5 +297,65 @@ public class Locale extends YamlManager
     public static String capitalize(String string)
     {
         return WordUtils.capitalizeFully(string.toLowerCase().replace("_", " "));
+    }
+
+    public static String formatTime(double seconds)
+    {
+        return formatTime(false, seconds, false);
+    }
+
+    public static String formatTime(double seconds, boolean shortHand)
+    {
+        return formatTime(false, seconds, shortHand);
+    }
+
+    public static String formatTime(boolean showZero, double rawSeconds, boolean shortHand)
+    {
+        if (rawSeconds <= 0)
+        {
+            return "";
+        }
+
+        if (rawSeconds < 1.0)
+        {
+            return String.format("%.1f", rawSeconds) + " Seconds";
+        }
+
+        int seconds = (int)rawSeconds;
+        int hours = seconds / 3600;
+        int minutes = seconds % 3600 / 60;
+        int remainingSeconds = seconds % 60;
+
+        String hourPlural = hours == 1 ? hours + " Hour" : hours + " Hours";
+        String minutePlural = minutes == 1 ? minutes + " Minute" : minutes + " Minutes";
+        String secondPlural = remainingSeconds == 1 ? remainingSeconds + " Second" : remainingSeconds + " Seconds";
+
+        if (shortHand)
+        {
+            hourPlural = hours + "H";
+            minutePlural = minutes + "M";
+            secondPlural = seconds + "S";
+        }
+
+        //Format time to be exact. (I'm picky.)
+        if (hours == 0 & !showZero)
+        {
+            hourPlural = "";
+        }
+        else if (minutes > 0)
+        {
+            hourPlural += ", ";
+        }
+
+        if (minutes == 0 & !showZero)
+        {
+            minutePlural = "";
+        }
+        else if (remainingSeconds > 0)
+        {
+            minutePlural += ", ";
+        }
+
+        return hourPlural + minutePlural + secondPlural;
     }
 }

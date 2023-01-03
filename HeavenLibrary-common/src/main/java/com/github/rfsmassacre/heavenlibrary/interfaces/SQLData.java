@@ -29,8 +29,8 @@ public interface SQLData<T>
     void update(String... sqls) throws Exception;
 
     /**
-     * Query database to retrieve object .
-     * @param sql SQL statement
+     * Query database to retrieve object.
+     * @param sql SQL statement.
      * @return Object type from database.
      * @throws Exception Generic database exception.
      */
@@ -49,7 +49,7 @@ public interface SQLData<T>
 
     /**
      * Construct object from result set. (To be used exclusively on the query function.)
-     * @param result Result from query.
+     * @param result Result.
      * @return Object from database.
      */
     List<T> load(ResultSet result) throws SQLException;

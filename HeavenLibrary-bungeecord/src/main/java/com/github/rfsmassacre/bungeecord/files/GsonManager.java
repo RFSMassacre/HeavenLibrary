@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,8 +18,8 @@ import java.util.Set;
  */
 public abstract class GsonManager<T> implements FileData<T>
 {
-    private Plugin plugin;
-    private File folder;
+    protected final Plugin plugin;
+    private final File folder;
     private final Class<T> clazz;
 
     /**
@@ -53,7 +54,7 @@ public abstract class GsonManager<T> implements FileData<T>
         {
             if (file.exists())
             {
-                BufferedReader reader = Files.newBufferedReader(file.toPath());
+                BufferedReader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.ISO_8859_1);
                 return new Gson().fromJson(reader, clazz);
             }
         }
@@ -97,7 +98,7 @@ public abstract class GsonManager<T> implements FileData<T>
                 file.createNewFile();
             }
 
-            FileWriter writer = new FileWriter(file);
+            FileWriter writer = new FileWriter(file, StandardCharsets.ISO_8859_1);
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(t, writer);
             writer.flush();

@@ -1,10 +1,12 @@
 package com.github.rfsmassacre.spigot.commands;
 
 import com.github.rfsmassacre.spigot.files.configs.Locale;
+import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +24,7 @@ public abstract class SpigotCommand implements TabExecutor
 
     /**
      * Setup locale and command name when instantiating.
+     *
      * @param locale Locale.
      * @param commandName Command name.
      */
@@ -34,6 +37,7 @@ public abstract class SpigotCommand implements TabExecutor
 
     /**
      * When the sender runs a command.
+     *
      * @param sender CommandSender.
      * @param command Command given by plugin.yml file.
      * @param label Label given by plugin.
@@ -41,7 +45,8 @@ public abstract class SpigotCommand implements TabExecutor
      * @return Boolean: Whether it succeeded or failed.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+                            String[] args)
     {
         if (subCommands.isEmpty())
         {
@@ -80,7 +85,8 @@ public abstract class SpigotCommand implements TabExecutor
      * @return List of suggestions.
      */
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias,
+                                      String[] args)
     {
         if (args.length == 0)
         {
@@ -90,11 +96,13 @@ public abstract class SpigotCommand implements TabExecutor
         {
             //All subcommand names should be showed when typing the command in.
             List<String> suggestions = new ArrayList<>();
-            for (String subCommand : subCommands.keySet())
+            for (String subName : subCommands.keySet())
             {
-                if (subCommand.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                SubCommand subCommand = subCommands.get(subName);
+                if (subName.toLowerCase().startsWith(args[args.length - 1].toLowerCase()) &&
+                        sender.hasPermission(subCommand.permission))
                 {
-                    suggestions.add(subCommand);
+                    suggestions.add(subName);
                 }
             }
             return suggestions;
@@ -150,8 +158,8 @@ public abstract class SpigotCommand implements TabExecutor
      */
     protected abstract class SubCommand
     {
-        private String name;
-        private String permission;
+        private final String name;
+        private final String permission;
 
         public SubCommand(String name, String permission)
         {

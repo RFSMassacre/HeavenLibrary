@@ -7,6 +7,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.apache.commons.lang.WordUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Handles retrieving all the values from a locale file.
  */
@@ -90,7 +93,7 @@ public class Locale extends YamlManager
      */
     public void sendMessage(CommandSender receiver, String message, String...holders)
     {
-        sendMessage(receiver, true, true, true, message, holders);
+        sendMessage(receiver, true, true, true, true, message, holders);
     }
 
     /**
@@ -102,11 +105,12 @@ public class Locale extends YamlManager
      * @param message Message to be sent.
      * @param holders Words to be replaces with values.
      */
-    public void sendMessage(CommandSender receiver, boolean color, boolean format, boolean magic, String message,
-                            String... holders)
+    public void sendMessage(CommandSender receiver, boolean color, boolean format, boolean magic, boolean hex,
+                            String message, String... holders)
     {
         receiver.sendMessage(new TextComponent(format(replaceHolders(message, holders), color, format, format,
-                format, format, magic)));
+                format, format, magic, hex
+        )));
     }
 
     /**
@@ -128,7 +132,12 @@ public class Locale extends YamlManager
      */
     public static String format(String string)
     {
-        return ChatColor.translateAlternateColorCodes('&', string);
+        return format(string, true, true, true, true, true, true, true);
+    }
+
+    public static String undoFormat(String string)
+    {
+        return string.replace("§", "&");
     }
 
     /**
@@ -143,7 +152,7 @@ public class Locale extends YamlManager
      * @return Formatted string with only enabled parts.
      */
     public static String format(String string, boolean color, boolean bold, boolean italic, boolean underline,
-                                boolean strikethrough, boolean magic)
+                                boolean strikethrough, boolean magic, boolean hex)
     {
         if (!color)
         {
@@ -153,6 +162,7 @@ public class Locale extends YamlManager
             string = string.replaceAll("\\&[a-f]", "");
             string = string.replaceAll("\\§[A-F]", "");
             string = string.replaceAll("\\&[A-F]", "");
+            string = string.replaceAll("\\§(r|R)", "");
             string = string.replaceAll("\\&(r|R)", "");
         }
         if (!bold)
@@ -181,7 +191,23 @@ public class Locale extends YamlManager
             string = string.replaceAll("\\&(k|K)", "");
         }
 
-        return format(string);
+        if (!hex)
+        {
+            string = string.replaceAll("\\§(#)", "");
+            string = string.replaceAll("\\&(#)", "");
+        }
+        else
+        {
+            Pattern HEX_PATTERN = Pattern.compile("(\\§|\\&)(#[A-Fa-f0-9]{6})");
+            Matcher matcher = HEX_PATTERN.matcher(string);
+            while (matcher.find())
+            {
+                string = string.replace(matcher.group(), "" + ChatColor.of(matcher.group()
+                        .replaceAll("(\\§|\\&)", "")));
+            }
+        }
+
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
     /**

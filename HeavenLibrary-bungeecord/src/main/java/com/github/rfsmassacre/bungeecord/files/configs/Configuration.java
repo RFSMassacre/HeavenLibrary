@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Handles retrieving all the values from a configuration file.
  */
-public class Config extends YamlManager
+public class Configuration extends YamlManager
 {
     private String fileName;
 
@@ -18,7 +18,7 @@ public class Config extends YamlManager
      * @param plugin   JavaPlugin handling the configuration.
      * @param fileName Name of file to handle.
      */
-    public Config(Plugin plugin, String folder, String fileName)
+    public Configuration(Plugin plugin, String folder, String fileName)
     {
         super(plugin, folder, fileName);
 

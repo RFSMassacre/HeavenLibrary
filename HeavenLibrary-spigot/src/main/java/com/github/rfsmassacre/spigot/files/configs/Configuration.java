@@ -1,16 +1,18 @@
 package com.github.rfsmassacre.spigot.files.configs;
 
 import com.github.rfsmassacre.spigot.files.YamlManager;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Handles retrieving all the values from a configuration file.
  */
 public class Configuration extends YamlManager
 {
-    private String fileName;
+    private final String fileName;
 
     /**
      * JavaPlugin and name of file will give back a fully updated YamlConfiguration.
@@ -145,5 +147,27 @@ public class Configuration extends YamlManager
         }
 
         return option;
+    }
+
+    public Set<String> getKeys(boolean deep)
+    {
+        Set<String> keys = yaml.getKeys(deep);
+        if (keys.isEmpty())
+        {
+            keys = defaultYaml.getKeys(deep);
+        }
+
+        return keys;
+    }
+
+    public ConfigurationSection getSection(String key)
+    {
+        ConfigurationSection section = yaml.getConfigurationSection(key);
+        if (section == null)
+        {
+            section = defaultYaml.getConfigurationSection(key);
+        }
+
+        return section;
     }
 }

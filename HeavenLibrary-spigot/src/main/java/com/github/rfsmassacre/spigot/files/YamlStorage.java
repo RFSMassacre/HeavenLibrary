@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class YamlStorage<T> implements FileData<YamlConfiguration>
+public abstract class YamlStorage<T> implements FileData<T>
 {
     protected JavaPlugin plugin;
     protected File folder;
@@ -18,7 +18,6 @@ public abstract class YamlStorage<T> implements FileData<YamlConfiguration>
      * Constructor for YamlManager.
      * @param plugin Plugin where files will be for.
      * @param folderName Name of folder.
-     * @param fileName Name of file.
      */
     public YamlStorage(JavaPlugin plugin, String folderName)
     {
@@ -33,9 +32,14 @@ public abstract class YamlStorage<T> implements FileData<YamlConfiguration>
      * @return Data or object read from the file.
      */
     @Override
-    public YamlConfiguration read(String fileName)
+    public T read(String fileName)
     {
-        return YamlConfiguration.loadConfiguration(getFile(fileName));
+        return load(YamlConfiguration.loadConfiguration(getFile(fileName)));
+    }
+
+    public T read(File file)
+    {
+        return load(YamlConfiguration.loadConfiguration(file));
     }
 
     /**
@@ -52,14 +56,14 @@ public abstract class YamlStorage<T> implements FileData<YamlConfiguration>
     /**
      * Write data of object into the file.
      * @param fileName Name of file.
-     * @param configuration Configuration file.
+     * @param t Generic type.
      */
     @Override
-    public void write(String fileName, YamlConfiguration configuration)
+    public void write(String fileName, T t)
     {
         try
         {
-            configuration.save(getFile(fileName));
+            save(t).save(getFile(fileName));
         }
         catch (IOException exception)
         {
@@ -92,7 +96,12 @@ public abstract class YamlStorage<T> implements FileData<YamlConfiguration>
         return new File(folder.getPath() + "/" + fileName + (fileName.endsWith(".yml") ? "" : ".yml"));
     }
 
+    public File[] getFiles()
+    {
+        return folder.listFiles();
+    }
+
     public abstract T load(YamlConfiguration configuration);
 
-    public abstract YamlConfiguration save(T t, YamlConfiguration configuration);
+    public abstract YamlConfiguration save(T t);
 }

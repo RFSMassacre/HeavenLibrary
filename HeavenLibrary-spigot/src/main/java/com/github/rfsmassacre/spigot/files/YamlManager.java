@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Spigot sided manager for YML files.
@@ -22,6 +25,7 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
 
     /**
      * Constructor for YamlManager.
+     *
      * @param plugin Plugin where files will be for.
      * @param folderName Name of folder.
      * @param fileName Name of file.
@@ -50,6 +54,7 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
 
     /**
      * Read from file and convert into whatever data or object needed.
+     *
      * @param fileName Name of file.
      * @return Data or object read from the file.
      */
@@ -60,7 +65,19 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
     }
 
     /**
+     * Read object from file asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param callback Runnable that accepts object.
+     */
+    public void readAsync(String fileName, Consumer<YamlConfiguration> callback)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(read(fileName)));
+    }
+
+    /**
      * Copy a new file with format.
+     *
      * @param fileName Name of file.
      * @param overwrite Make new file over already existing file.
      */
@@ -92,7 +109,19 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
     }
 
     /**
+     * Write new file with internal file contents asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param overwrite Make new file over already existing file.
+     */
+    public void copyAsync(String fileName, boolean overwrite)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> copy(fileName, overwrite));
+    }
+
+    /**
      * Write data of object into the file.
+     *
      * @param fileName Name of file.
      * @param configuration Configuration file.
      */
@@ -110,7 +139,19 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
     }
 
     /**
+     * Write object to file asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param configuration Configuration file.
+     */
+    public void writeAsync(String fileName, YamlConfiguration configuration)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> write(fileName, configuration));
+    }
+
+    /**
      * Delete specified file.
+     *
      * @param fileName Name of file.
      */
     @Override
@@ -124,7 +165,18 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
     }
 
     /**
+     * Delete specified file asynchronously.
+     *
+     * @param fileName Name of file.
+     */
+    public void deleteAsync(String fileName)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> delete(fileName));
+    }
+
+    /**
      * Retrieve file object from file name.
+     *
      * @param fileName Name of file.
      * @return File object.
      */
@@ -132,5 +184,39 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
     public File getFile(String fileName)
     {
         return new File(folder.getPath() + "/" + fileName + (fileName.endsWith(".yml") ? "" : ".yml"));
+    }
+
+    /**
+     * Return all objects.
+     *
+     * @return All objects.
+     */
+    public Set<YamlConfiguration> all()
+    {
+        Set<YamlConfiguration> all = new HashSet<>();
+
+        try
+        {
+            for (File file : folder.listFiles())
+            {
+                all.add(read(file.getName()));
+            }
+        }
+        catch (NullPointerException exception)
+        {
+            //Do nothing
+        }
+
+        return all;
+    }
+
+    /**
+     * Return all objects asynchronously.
+     *
+     * @param callback Runnable that accepts set of objects.
+     */
+    public void allAsync(Consumer<Set<YamlConfiguration>> callback)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(all()));
     }
 }

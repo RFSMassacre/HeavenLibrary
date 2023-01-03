@@ -10,7 +10,13 @@ import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
+/**
+ * Handles storing and reading data via Gson.
+ *
+ * @param <T> Class type of object to be saved or read.
+ */
 /**
  * Handles storing and reading data via Gson.
  *
@@ -18,9 +24,9 @@ import java.util.Set;
  */
 public abstract class GsonManager<T> implements FileData<T>
 {
-    private JavaPlugin plugin;
-    private File folder;
-    private final Class<T> clazz;
+    protected final JavaPlugin plugin;
+    private final File folder;
+    protected final Class<T> clazz;
 
     /**
      * Constructor.
@@ -33,7 +39,7 @@ public abstract class GsonManager<T> implements FileData<T>
     {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder() + "/" + folderName);
-        folder.mkdir();
+        folder.mkdirs();
         this.clazz = clazz;
     }
 
@@ -67,7 +73,18 @@ public abstract class GsonManager<T> implements FileData<T>
     }
 
     /**
-     * Write brand new blank file.
+     * Read object from file asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param callback Runnable that accepts object.
+     */
+    public void readAsync(String fileName, Consumer<T> callback)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(read(fileName)));
+    }
+
+    /**
+     * Write new file with internal file contents.
      *
      * @param fileName Name of file.
      * @param overwrite Make new file over already existing file.
@@ -98,6 +115,17 @@ public abstract class GsonManager<T> implements FileData<T>
         {
             exception.printStackTrace();;
         }
+    }
+
+    /**
+     * Write new file with internal file contents asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param overwrite Make new file over already existing file.
+     */
+    public void copyAsync(String fileName, boolean overwrite)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> copy(fileName, overwrite));
     }
 
     /**
@@ -133,6 +161,17 @@ public abstract class GsonManager<T> implements FileData<T>
     }
 
     /**
+     * Write object to file asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param t Data or object to be updated into file.
+     */
+    public void writeAsync(String fileName, T t)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> write(fileName, t));
+    }
+
+    /**
      * Delete specified file.
      *
      * @param fileName Name of file.
@@ -145,6 +184,16 @@ public abstract class GsonManager<T> implements FileData<T>
         {
             file.delete();
         }
+    }
+
+    /**
+     * Delete specified file asynchronously.
+     *
+     * @param fileName Name of file.
+     */
+    public void deleteAsync(String fileName)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> delete(fileName));
     }
 
     /**
@@ -181,5 +230,15 @@ public abstract class GsonManager<T> implements FileData<T>
         }
 
         return all;
+    }
+
+    /**
+     * Return all objects asynchronously.
+     *
+     * @param callback Runnable that accepts set of objects.
+     */
+    public void allAsync(Consumer<Set<T>> callback)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(all()));
     }
 }
