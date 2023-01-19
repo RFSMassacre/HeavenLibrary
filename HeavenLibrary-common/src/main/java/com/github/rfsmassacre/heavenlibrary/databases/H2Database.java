@@ -9,11 +9,9 @@ import java.util.List;
  * Handle H2 databases.
  * @param <T> Object type to store or query.
  */
+@SuppressWarnings({"unused"})
 public abstract class H2Database<T> extends SQLDatabase<T>
 {
-    /**
-     * Check for database driver only once.
-     */
     static
     {
         try

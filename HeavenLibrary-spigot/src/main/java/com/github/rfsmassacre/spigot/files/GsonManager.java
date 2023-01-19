@@ -45,7 +45,6 @@ public abstract class GsonManager<T> implements FileData<T>
 
     /**
      * Read object from file.
-     *
      * Please note that all objects inside objects have to be serializable or else you will get an exception on reading.
      *
      * @param fileName Name of file.

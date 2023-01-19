@@ -1,22 +1,14 @@
 package com.github.rfsmassacre.heavenlibrary.databases;
 
-import com.github.rfsmassacre.heavenlibrary.interfaces.SQLData;
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Handle MySQL databases.
  * @param <T> Object type to store or query.
  */
+@SuppressWarnings({"unused"})
 public abstract class MySQLDatabase<T> extends SQLDatabase<T>
 {
-    /**
-     * Check for database driver only once.
-     */
     static
     {
         try
@@ -30,12 +22,12 @@ public abstract class MySQLDatabase<T> extends SQLDatabase<T>
     }
 
     //Database information.
-    private String hostname;
-    private String database;
-    private String username;
-    private String password;
-    private int port;
-    private boolean ssl;
+    private final String hostname;
+    private final String database;
+    private final String username;
+    private final String password;
+    private final int port;
+    private final boolean ssl;
 
     /**
      * Save database while instantiating.
