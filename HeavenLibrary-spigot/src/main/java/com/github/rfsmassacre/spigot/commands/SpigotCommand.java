@@ -20,8 +20,17 @@ import java.util.List;
 public abstract class SpigotCommand implements TabExecutor
 {
     protected final Locale locale;
+    protected final String pluginName;
     protected final String commandName;
     private final LinkedHashMap<String, SubCommand> subCommands;
+
+    public SpigotCommand(Locale locale, String pluginName, String commandName)
+    {
+        this.locale = locale;
+        this.pluginName = pluginName;
+        this.commandName = commandName;
+        this.subCommands = new LinkedHashMap<>();
+    }
 
     /**
      * Setup locale and command name when instantiating.
@@ -31,9 +40,7 @@ public abstract class SpigotCommand implements TabExecutor
      */
     public SpigotCommand(Locale locale, String commandName)
     {
-        this.locale = locale;
-        this.commandName = commandName;
-        this.subCommands = new LinkedHashMap<>();
+        this(locale, null, commandName);
     }
 
     /**
@@ -171,7 +178,8 @@ public abstract class SpigotCommand implements TabExecutor
         public SubCommand(String name)
         {
             this.name = name;
-            this.permission = commandName + (name.isEmpty() ? "" : "." + name);
+            this.permission = (pluginName == null || pluginName.isEmpty() ? "" : pluginName + ".") + commandName +
+                    (name == null || name.isEmpty() ? "" : "." + name);
         }
 
         /**
