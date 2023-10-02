@@ -8,6 +8,37 @@
     <groupId>org.virtualversellc</groupId>
     <artifactId>HeavenLibrary</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>HeavenLibrary</name>
+    <description>Library used to create Paper and Bungeecord/Waterfall plugins for Minecraft servers</description>
+    <url>https://github.com/VirtualVerse-LLC/HeavenLibrary</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Rene Flores</name>
+            <email>developer@virtual-verse.co</email>
+            <organization>org.virtualversellc</organization>
+            <organizationUrl>https://virtual-verse.co</organizationUrl>
+        </developer>
+        <developer>
+            <name>Omar Sanchez II</name>
+            <email>developer@virtual-verse.co</email>
+            <organization>org.virtualversellc</organization>
+            <organizationUrl>https://virtual-verse.co</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/VirtualVerse-LLC/HeavenLibrary.git</connection>
+        <developerConnection>scm:git:ssh://github.com:VirtualVerse-LLC/HeavenLibrary.git</developerConnection>
+        <url>https://github.com/VirtualVerse-LLC/HeavenLibrary</url>
+    </scm>
 
     <packaging>pom</packaging>
     <properties>
