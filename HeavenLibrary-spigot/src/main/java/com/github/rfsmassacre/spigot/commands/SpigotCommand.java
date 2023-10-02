@@ -2,6 +2,7 @@ package com.github.rfsmassacre.spigot.commands;
 
 import com.github.rfsmassacre.spigot.files.configs.Locale;
 import lombok.Getter;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -18,9 +19,9 @@ import java.util.List;
  */
 public abstract class SpigotCommand implements TabExecutor
 {
-    protected Locale locale;
-    protected String commandName;
-    private LinkedHashMap<String, SubCommand> subCommands;
+    protected final Locale locale;
+    protected final String commandName;
+    private final LinkedHashMap<String, SubCommand> subCommands;
 
     /**
      * Setup locale and command name when instantiating.
@@ -167,6 +168,12 @@ public abstract class SpigotCommand implements TabExecutor
             this.permission = permission;
         }
 
+        public SubCommand(String name)
+        {
+            this.name = name;
+            this.permission = commandName + (name.isEmpty() ? "" : "." + name);
+        }
+
         /**
          * Check if sender is a player. (This assumes the opposite is console.)
          * @param sender CommandSender.
@@ -221,4 +228,19 @@ public abstract class SpigotCommand implements TabExecutor
      * @param sender CommandSender.
      */
     protected abstract void onInvalidArgs(CommandSender sender);
+
+    /**
+     * Play sound during a command input.
+     * @param sender CommandSender.
+     * @param sound Sound.
+     * @param volume Volume.
+     * @param pitch Pitch.
+     */
+    protected void playSound(CommandSender sender, Sound sound, float volume, float pitch)
+    {
+        if (sender instanceof Player player)
+        {
+            player.playSound(player.getLocation(), sound, volume, pitch);
+        }
+    }
 }

@@ -7,56 +7,48 @@ import java.util.List;
 /**
  * Implement for manipulation of any kind of database.
  */
-public interface SQLData<T>
+public interface SQLData<T, R>
 {
     /**
      * Connect to database.
-     * @throws Exception Generic database exception.
+     * @throws SQLException Exception.
      */
-    void connect() throws Exception;
+    void connect() throws SQLException, ClassNotFoundException;
 
     /**
      * Disconnect from database.
-     * @throws Exception Generic database exception.
+     * @throws SQLException Exception.
      */
-    void close() throws Exception;
+    void close() throws SQLException;
 
     /**
-     * Update database with series of statements.
-     * @param sqls Series of queries to update in database.
-     * @throws Exception Generic database exception.
+     * Add object into database.
+     * @param t T.
+     * @throws SQLException Exception
      */
-    void update(String... sqls) throws Exception;
+    void add(T t) throws Exception;
+
+    /**
+     * Update object into database.
+     * @param t T.
+     * @throws SQLException Exception.
+     */
+    void update(T t) throws SQLException;
 
     /**
      * Query database to retrieve object.
-     * @param sql SQL statement.
      * @return Object type from database.
-     * @throws Exception Generic database exception.
+     * @throws SQLException Exception.
      */
-    List<T> query(String sql) throws Exception;
-
-    /**
-     * Create table to the database.
-     */
-    void createTable(String tableName, String... columns);
-
-    /**
-     * Deconstruct object to save to database.
-     * @param t Object to save.
-     */
-    void save(T t);
-
-    /**
-     * Construct object from result set. (To be used exclusively on the query function.)
-     * @param result Result.
-     * @return Object from database.
-     */
-    List<T> load(ResultSet result) throws SQLException;
+    T query(R r, Class<T> clazz) throws SQLException;
 
     /**
      * Delete object from the database.
      * @param t Object to delete.
      */
-    void delete(T t);
+    void delete(T t) throws SQLException;
+
+    ResultSet executeQuery(String sql) throws SQLException;
+
+    int executeUpdate(String sql) throws SQLException;
 }

@@ -4,10 +4,9 @@ import com.github.rfsmassacre.heavenlibrary.interfaces.FileData;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -90,20 +89,13 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
             InputStreamReader reader = new InputStreamReader(stream);
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(reader);
             File file = getFile(fileName);
-            try
+            if (overwrite)
             {
-                if (overwrite)
-                {
-                    configuration.save(file);
-                }
-                else if (!file.exists())
-                {
-                    configuration.save(file);
-                }
+                write(fileName, configuration);
             }
-            catch (IOException exception)
+            else if (!file.exists())
             {
-                exception.printStackTrace();
+                write(fileName, configuration);
             }
         }
     }
@@ -128,9 +120,24 @@ public abstract class YamlManager implements FileData<YamlConfiguration>
     @Override
     public void write(String fileName, YamlConfiguration configuration)
     {
+        write(fileName, configuration, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Write data of object into the file.
+     *
+     * @param fileName Name of file.
+     * @param configuration Configuration file.
+     * @param charset Character set for file write mode.
+     */
+    public void write(String fileName, YamlConfiguration configuration, Charset charset)
+    {
         try
         {
-            configuration.save(getFile(fileName));
+            OutputStreamWriter streamWriter = new OutputStreamWriter(new FileOutputStream(getFile(fileName)), charset);
+            BufferedWriter writer = new BufferedWriter(streamWriter);
+            writer.write(configuration.saveToString());
+            writer.close();
         }
         catch (IOException exception)
         {

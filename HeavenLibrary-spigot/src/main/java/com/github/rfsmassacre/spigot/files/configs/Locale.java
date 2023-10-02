@@ -3,12 +3,14 @@ package com.github.rfsmassacre.spigot.files.configs;
 import com.github.rfsmassacre.spigot.files.YamlManager;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,6 +131,17 @@ public class Locale extends YamlManager
     public void sendLocale(CommandSender receiver, boolean usePrefix, String key, String...holders)
     {
         sendMessage(receiver, getMessage(key, usePrefix), holders);
+    }
+
+    /**
+     * Send formatted locale message to receiver.
+     * @param receiver Player or console receiving message.
+     * @param key Specified message assigned to.
+     * @param holders Words to be replaced with values.
+     */
+    public void sendLocale(CommandSender receiver, String key, String...holders)
+    {
+        sendMessage(receiver, getMessage(key, true), holders);
     }
 
     /**
@@ -279,6 +292,17 @@ public class Locale extends YamlManager
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
+    public static List<String> formatLore(List<String> lore)
+    {
+        List<String> newLore = new ArrayList<>();
+        for (String line : lore)
+        {
+            newLore.add(format(line));
+        }
+
+        return newLore;
+    }
+
     /**
      * Strips away the format given from format(String).
      * @param string String to strip.
@@ -318,7 +342,7 @@ public class Locale extends YamlManager
 
         if (rawSeconds < 1.0)
         {
-            return String.format("%.1f", rawSeconds) + " Seconds";
+            return String.format("%.1f", rawSeconds) + (shortHand ? " S" : " Seconds");
         }
 
         int seconds = (int)rawSeconds;
@@ -332,9 +356,9 @@ public class Locale extends YamlManager
 
         if (shortHand)
         {
-            hourPlural = hours + "H";
-            minutePlural = minutes + "M";
-            secondPlural = seconds + "S";
+            hourPlural = hours + " H";
+            minutePlural = minutes + " M";
+            secondPlural = seconds + " S";
         }
 
         //Format time to be exact. (I'm picky.)

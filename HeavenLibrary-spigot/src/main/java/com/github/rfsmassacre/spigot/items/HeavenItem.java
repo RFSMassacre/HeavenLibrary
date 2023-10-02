@@ -103,7 +103,7 @@ public abstract class HeavenItem
         meta.setDisplayName(Locale.format(displayName));
         item.setItemMeta(meta);
     }
-    //Adds the ID to the first line to ensure when checking it's O(1).
+    //Adds the ID to the first line to ensure when checking, it's O(1).
     public void setItemLore(List<String> lore)
     {
         ItemMeta meta = item.getItemMeta();

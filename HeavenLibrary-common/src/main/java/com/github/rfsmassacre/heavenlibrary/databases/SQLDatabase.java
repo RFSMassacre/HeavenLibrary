@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-abstract class SQLDatabase<T> implements SQLData<T>
+abstract class SQLDatabase<T, R> implements SQLData<T, R>
 {
     protected Connection connection;
 
@@ -24,62 +24,17 @@ abstract class SQLDatabase<T> implements SQLData<T>
         }
     }
 
-    /**
-     * Update database with series of statements.
-     * @param sqls Series of queries to update in database.
-     */
     @Override
-    public void update(String... sqls)
+    public ResultSet executeQuery(String sql) throws SQLException
     {
-        try
-        {
-            Statement statement = connection.createStatement();
-            for (String sql : sqls)
-            {
-                statement.executeUpdate(sql);
-            }
-            statement.close();
-        }
-        catch (SQLException exception)
-        {
-            exception.printStackTrace();
-        }
-    }
-
-    /**
-     * Retrieve object from database.
-     * @param sql SQL statement.
-     * @return Object from database.
-     */
-    @Override
-    public List<T> query(String sql)
-    {
-        List<T> t = new ArrayList<>();
-
-        try
-        {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet result = statement.executeQuery();
-            t = load(result);
-            result.close();
-            statement.close();
-        }
-        catch (SQLException exception)
-        {
-            exception.printStackTrace();
-        }
-
-        return t;
+        PreparedStatement statement = connection.prepareStatement(sql);
+        return statement.executeQuery();
     }
 
     @Override
-    public void createTable(String tableName, String... columns)
+    public int executeUpdate(String sql) throws SQLException
     {
-        if (columns.length > 0)
-        {
-            String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + String.join(", ",
-                    Arrays.asList(columns)) + ")";
-            update(sql);
-        }
+        PreparedStatement statement = connection.prepareStatement(sql);
+        return statement.executeUpdate();
     }
 }

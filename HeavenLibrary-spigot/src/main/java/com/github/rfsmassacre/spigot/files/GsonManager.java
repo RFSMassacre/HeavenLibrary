@@ -1,22 +1,18 @@
 package com.github.rfsmassacre.spigot.files;
 
+import com.github.rfsmassacre.spigot.utils.RuntimeTypeAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.github.rfsmassacre.heavenlibrary.interfaces.FileData;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
-/**
- * Handles storing and reading data via Gson.
- *
- * @param <T> Class type of object to be saved or read.
- */
 /**
  * Handles storing and reading data via Gson.
  *
@@ -27,20 +23,36 @@ public abstract class GsonManager<T> implements FileData<T>
     protected final JavaPlugin plugin;
     private final File folder;
     protected final Class<T> clazz;
+    private final Gson gson;
 
     /**
      * Constructor.
      *
      * @param plugin JavaPlugin handling this manager.
      * @param folderName Name of folder where everything will be held.
-     * @param clazz Class type of the object being handled.
+     * @param clazz Class type of the object.
+     * @param childClasses Class type of object's children.
      */
-    public GsonManager(JavaPlugin plugin, String folderName, Class<T> clazz)
+    @SafeVarargs
+    public GsonManager(JavaPlugin plugin, String folderName, Class<T> clazz, Class<? extends T>... childClasses)
     {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder() + "/" + folderName);
         folder.mkdirs();
         this.clazz = clazz;
+        if (childClasses == null || childClasses.length == 0)
+        {
+            this.gson = new GsonBuilder().setPrettyPrinting().create();
+            return;
+        }
+
+        RuntimeTypeAdapterFactory<T> adapter = RuntimeTypeAdapterFactory.of(clazz, "type");
+        for (Class<? extends T> childClass : childClasses)
+        {
+            adapter.registerSubtype(childClass, childClass.getSimpleName());
+        }
+
+        this.gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
     }
 
     /**
@@ -54,13 +66,12 @@ public abstract class GsonManager<T> implements FileData<T>
     public T read(String fileName)
     {
         File file = getFile(fileName);
-
         try
         {
             if (file.exists())
             {
                 BufferedReader reader = Files.newBufferedReader(file.toPath());
-                return new Gson().fromJson(reader, clazz);
+                return gson.fromJson(reader, clazz);
             }
         }
         catch (IOException exception)
@@ -93,9 +104,7 @@ public abstract class GsonManager<T> implements FileData<T>
     {
         InputStream stream = plugin.getResource(fileName);
         InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(stream));
-        Gson gson = new Gson();
         T t = gson.fromJson(reader, clazz);
-
         try
         {
             File file = getFile(fileName);
@@ -129,7 +138,6 @@ public abstract class GsonManager<T> implements FileData<T>
 
     /**
      * Write object to file.
-     *
      * Please note that all objects inside objects have to be serializable or else you will get an exception on writing.
      *
      * @param fileName Name of file.
@@ -139,7 +147,6 @@ public abstract class GsonManager<T> implements FileData<T>
     public void write(String fileName, T t)
     {
         File file = getFile(fileName);
-
         try
         {
             if (!file.exists())
@@ -148,8 +155,9 @@ public abstract class GsonManager<T> implements FileData<T>
             }
 
             FileWriter writer = new FileWriter(file);
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(t, writer);
+            JsonObject json = (JsonObject) gson.toJsonTree(t);
+            json.addProperty("type", t.getClass().getSimpleName());
+            gson.toJson(json, writer);
             writer.flush();
             writer.close();
         }

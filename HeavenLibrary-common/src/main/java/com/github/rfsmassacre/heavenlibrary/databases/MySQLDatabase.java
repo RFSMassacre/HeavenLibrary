@@ -7,7 +7,7 @@ import java.sql.*;
  * @param <T> Object type to store or query.
  */
 @SuppressWarnings({"unused"})
-public abstract class MySQLDatabase<T> extends SQLDatabase<T>
+public abstract class MySQLDatabase<T, R> extends SQLDatabase<T, R>
 {
     static
     {

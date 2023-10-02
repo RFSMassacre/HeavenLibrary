@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public abstract class YamlStorage<T> implements FileData<T>
 {
@@ -24,6 +25,10 @@ public abstract class YamlStorage<T> implements FileData<T>
         this.plugin = plugin;
         this.folderName = folderName;
         this.folder = new File(plugin.getDataFolder().getPath() + "/" + folderName);
+        if (!folder.exists())
+        {
+            folder.mkdirs();
+        }
     }
 
     /**
@@ -34,12 +39,34 @@ public abstract class YamlStorage<T> implements FileData<T>
     @Override
     public T read(String fileName)
     {
-        return load(YamlConfiguration.loadConfiguration(getFile(fileName)));
+        File file = getFile(fileName);
+        if (file.exists())
+        {
+            return load(YamlConfiguration.loadConfiguration(file));
+        }
+
+        return null;
     }
 
     public T read(File file)
     {
-        return load(YamlConfiguration.loadConfiguration(file));
+        if (file.exists())
+        {
+            return load(YamlConfiguration.loadConfiguration(file));
+        }
+
+        return null;
+    }
+
+    /**
+     * Read object from file asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param callback Runnable that accepts object.
+     */
+    public void readAsync(String fileName, Consumer<T> callback)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(read(fileName)));
     }
 
     /**
@@ -72,6 +99,17 @@ public abstract class YamlStorage<T> implements FileData<T>
     }
 
     /**
+     * Write object to file asynchronously.
+     *
+     * @param fileName Name of file.
+     * @param t Generic type.
+     */
+    public void writeAsync(String fileName, T t)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> write(fileName, t));
+    }
+
+    /**
      * Delete specified file.
      * @param fileName Name of file.
      */
@@ -83,6 +121,16 @@ public abstract class YamlStorage<T> implements FileData<T>
         {
             file.delete();
         }
+    }
+
+    /**
+     * Delete specified file asynchronously.
+     *
+     * @param fileName Name of file.
+     */
+    public void deleteAsync(String fileName)
+    {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> delete(fileName));
     }
 
     /**

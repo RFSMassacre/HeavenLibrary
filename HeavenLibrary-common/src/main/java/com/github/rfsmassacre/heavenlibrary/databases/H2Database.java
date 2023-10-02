@@ -10,7 +10,7 @@ import java.util.List;
  * @param <T> Object type to store or query.
  */
 @SuppressWarnings({"unused"})
-public abstract class H2Database<T> extends SQLDatabase<T>
+public abstract class H2Database<T, R> extends SQLDatabase<T, R>
 {
     static
     {

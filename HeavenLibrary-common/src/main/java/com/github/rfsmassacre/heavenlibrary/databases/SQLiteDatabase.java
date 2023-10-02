@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.sql.*;
 
 @SuppressWarnings({"unused"})
-public abstract class SQLiteDatabase<T> extends SQLDatabase<T>
+public abstract class SQLiteDatabase<T, R> extends SQLDatabase<T, R>
 {
     /**
      * Check for database driver only once.
