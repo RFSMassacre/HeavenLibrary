@@ -31,10 +31,8 @@ public abstract class GsonManager<T> implements FileData<T>
      * @param plugin JavaPlugin handling this manager.
      * @param folderName Name of folder where everything will be held.
      * @param clazz Class type of the object.
-     * @param childClasses Class type of object's children.
      */
-    @SafeVarargs
-    public GsonManager(JavaPlugin plugin, String folderName, Class<T> clazz, Class<? extends T>... childClasses)
+    public GsonManager(JavaPlugin plugin, String folderName, Class<T> clazz)
     {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder() + "/" + folderName);
@@ -46,6 +44,7 @@ public abstract class GsonManager<T> implements FileData<T>
 
     /**
      * Register child class.
+     *
      * @param childCLass Child class.
      */
     public void registerType(Class<? extends T> childCLass)
