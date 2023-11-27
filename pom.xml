@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- The following tags are used by maven -->
-    <groupId>co.virtual-verse</groupId>
+    <groupId>co.virtual-versellc</groupId>
     <artifactId>HeavenLibrary</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>HeavenLibrary</name>
@@ -23,13 +23,13 @@
         <developer>
             <name>Rene Flores</name>
             <email>developer@virtual-verse.co</email>
-            <organization>co.virtual-verse</organization>
+            <organization>co.virtual-versellc</organization>
             <organizationUrl>https://virtual-verse.co</organizationUrl>
         </developer>
         <developer>
             <name>Omar Sanchez II</name>
             <email>developer@virtual-verse.co</email>
-            <organization>co.virtual-verse</organization>
+            <organization>co.virtual-versellc</organization>
             <organizationUrl>https://virtual-verse.co</organizationUrl>
         </developer>
     </developers>
