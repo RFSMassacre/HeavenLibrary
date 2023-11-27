@@ -166,8 +166,8 @@ public abstract class SpigotCommand implements TabExecutor
      */
     protected abstract class SubCommand
     {
-        private final String name;
-        private final String permission;
+        protected final String name;
+        protected final String permission;
 
         public SubCommand(String name, String permission)
         {

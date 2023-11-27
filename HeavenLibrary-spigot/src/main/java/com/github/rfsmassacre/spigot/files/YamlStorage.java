@@ -40,12 +40,7 @@ public abstract class YamlStorage<T> implements FileData<T>
     public T read(String fileName)
     {
         File file = getFile(fileName);
-        if (file.exists())
-        {
-            return load(YamlConfiguration.loadConfiguration(file));
-        }
-
-        return null;
+        return read(file);
     }
 
     public T read(File file)

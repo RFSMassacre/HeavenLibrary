@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -47,6 +48,30 @@ public abstract class Menu
         return VIEWERS;
     }
 
+    public static void update()
+    {
+        for (Iterator<UUID> iterator = VIEWERS.keySet().iterator(); iterator.hasNext();)
+        {
+            UUID viewerId = iterator.next();
+            Player player = Bukkit.getPlayer(viewerId);
+            if (player == null)
+            {
+                continue;
+            }
+
+            Menu menu = VIEWERS.get(player.getUniqueId());
+            String title = player.getOpenInventory().getTitle();
+            if (menu.getTitle().equals(title))
+            {
+                menu.updateInventory(player);
+            }
+            else
+            {
+                iterator.remove();
+            }
+        }
+    }
+
     @Getter
     protected String title;
     @Getter
@@ -54,33 +79,25 @@ public abstract class Menu
     @Getter
     protected int page;
     @Getter
-    protected List<Icon> icons;
+    protected Map<Integer, Icon> icons;
 
     public Menu(String title, int rows, int page)
     {
         this.title = Locale.format(title);
         this.rows = rows;
         this.page = page;
-        this.icons = new ArrayList<>();
+        this.icons = new HashMap<>();
     }
 
 
     public void addIcon(Icon icon)
     {
-        this.icons.add(icon);
+        this.icons.put(icon.getSlot(), icon);
     }
 
     public boolean slotTaken(int slot)
     {
-        for (Icon icon : icons)
-        {
-            if (icon.getSlot() == slot)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return icons.containsKey(slot);
     }
 
     public Inventory createInventory(Player player)
@@ -91,7 +108,7 @@ public abstract class Menu
         //Add and place all the items.
         updateIcons(player);
 
-        for (Icon icon : icons)
+        for (Icon icon : icons.values())
         {
             inventory.setItem(icon.getSlot(), icon.getItemStack());
         }
@@ -112,7 +129,7 @@ public abstract class Menu
 
             //Add and place all the items.
             updateIcons(player);
-            for (Icon icon : icons)
+            for (Icon icon : icons.values())
             {
                 inventory.setItem(icon.getSlot(), icon.getItemStack());
             }

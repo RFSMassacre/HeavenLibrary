@@ -4,7 +4,6 @@ import com.github.rfsmassacre.spigot.utils.RuntimeTypeAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.github.rfsmassacre.heavenlibrary.interfaces.FileData;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,7 +22,8 @@ public abstract class GsonManager<T> implements FileData<T>
     protected final JavaPlugin plugin;
     private final File folder;
     protected final Class<T> clazz;
-    private final Gson gson;
+    private final Set<RuntimeTypeAdapterFactory<T>> adapters;
+    private Gson gson;
 
     /**
      * Constructor.
@@ -31,28 +31,44 @@ public abstract class GsonManager<T> implements FileData<T>
      * @param plugin JavaPlugin handling this manager.
      * @param folderName Name of folder where everything will be held.
      * @param clazz Class type of the object.
-     * @param childClasses Class type of object's children.
      */
-    @SafeVarargs
-    public GsonManager(JavaPlugin plugin, String folderName, Class<T> clazz, Class<? extends T>... childClasses)
+    public GsonManager(JavaPlugin plugin, String folderName, Class<T> clazz)
     {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder() + "/" + folderName);
         folder.mkdirs();
         this.clazz = clazz;
-        if (childClasses == null || childClasses.length == 0)
+        this.adapters = new HashSet<>();
+        rebuildGson();
+    }
+
+    /**
+     * Register child class.
+     *
+     * @param childCLass Child class.
+     */
+    public void registerType(Class<? extends T> childCLass)
+    {
+        RuntimeTypeAdapterFactory<T> adapter = RuntimeTypeAdapterFactory
+                .of(clazz, "type")
+                .registerSubtype(childCLass, childCLass.getSimpleName());
+        this.adapters.add(adapter);
+        rebuildGson();
+    }
+
+    /**
+     * Rebuild Gson.
+     */
+    private void rebuildGson()
+    {
+        GsonBuilder builder = new GsonBuilder().setPrettyPrinting();
+        for (RuntimeTypeAdapterFactory<T> factory : adapters)
         {
-            this.gson = new GsonBuilder().setPrettyPrinting().create();
-            return;
+            builder.registerTypeAdapterFactory(factory);
         }
 
-        RuntimeTypeAdapterFactory<T> adapter = RuntimeTypeAdapterFactory.of(clazz, "type");
-        for (Class<? extends T> childClass : childClasses)
-        {
-            adapter.registerSubtype(childClass, childClass.getSimpleName());
-        }
-
-        this.gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
+        builder.setPrettyPrinting();
+        this.gson = builder.create();
     }
 
     /**
