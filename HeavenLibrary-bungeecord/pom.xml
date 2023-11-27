@@ -6,7 +6,7 @@
     <description>A library to help make plugins easier.</description>
 
     <parent>
-        <groupId>com.github.rfsmassacre</groupId>
+        <groupId>co.virtual-verse</groupId>
         <artifactId>HeavenLibrary</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -55,7 +55,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.rfsmassacre</groupId>
+            <groupId>co.virtual-verse</groupId>
             <artifactId>HeavenLibrary-common</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
