@@ -8,7 +8,7 @@
     <parent>
         <groupId>co.virtual-verse</groupId>
         <artifactId>HeavenLibrary</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>HeavenLibrary-Bungeecord</artifactId>
