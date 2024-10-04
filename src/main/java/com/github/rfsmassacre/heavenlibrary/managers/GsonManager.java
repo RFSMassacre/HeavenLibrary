@@ -1,7 +1,10 @@
-package main.java.com.github.rfsmassacre.heavenlibrary.managers;
+package com.github.rfsmassacre.heavenlibrary.managers;
 
 import com.github.rfsmassacre.heavenlibrary.factories.RuntimeTypeAdapterFactory;
 import com.github.rfsmassacre.heavenlibrary.interfaces.MultiFileData;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import java.io.*;
 import java.util.HashSet;
@@ -12,6 +15,8 @@ import java.util.function.Consumer;
 @SuppressWarnings({"unused", "CallToPrintStackTrace", "ResultOfMethodCallIgnored"})
 public abstract class GsonManager<T> implements MultiFileData<T>
 {
+    private static final String CLASS_ID = "type";
+
     private final File folder;
     protected final Class<T> clazz;
     private final Set<RuntimeTypeAdapterFactory<? extends T>> adapters;
@@ -182,7 +187,7 @@ public abstract class GsonManager<T> implements MultiFileData<T>
 
             FileWriter writer = new FileWriter(file);
             JsonObject json = gson.toJsonTree(t).getAsJsonObject();
-            json.addProperty("type", t.getClass().getSimpleName());
+            json.addProperty(CLASS_ID, t.getClass().getSimpleName());
             gson.toJson(json, writer);
             writer.flush();
             writer.close();

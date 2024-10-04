@@ -2,7 +2,9 @@ package com.github.rfsmassacre.heavenlibrary.databases;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.SQLData;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;

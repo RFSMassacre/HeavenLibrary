@@ -18,14 +18,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 public abstract class VelocityCommand extends HeavenCommand<CommandSource> implements SimpleCommand
 {
-    protected final VelocityConfiguration config;
-    protected final VelocityLocale locale;
-
     public VelocityCommand(HeavenVelocityPlugin plugin, String commandName)
     {
-        super(((Plugin) plugin).id(), commandName);
-        this.config = plugin.getConfiguration();
-        this.locale = plugin.getLocale();
+        super(plugin.getConfiguration(), plugin.getLocale(), ((Plugin) plugin).id(), commandName);
     }
 
     /**
@@ -122,7 +117,7 @@ public abstract class VelocityCommand extends HeavenCommand<CommandSource> imple
      * Adds subCommand to the map.
      * @param subCommand SubCommand.
      */
-    protected void addSubCommand(SubCommand subCommand)
+    protected void addSubCommand(VelocitySubCommand subCommand)
     {
         subCommands.put(subCommand.getName(), subCommand);
     }
@@ -131,7 +126,7 @@ public abstract class VelocityCommand extends HeavenCommand<CommandSource> imple
      * Removes subCommand from the map.
      * @param subCommand SubCommand.
      */
-    protected void removeSubCommand(SubCommand subCommand)
+    protected void removeSubCommand(VelocitySubCommand subCommand)
     {
         subCommands.remove(subCommand.getName());
     }
@@ -140,14 +135,14 @@ public abstract class VelocityCommand extends HeavenCommand<CommandSource> imple
      * Broken down commands within a larger command in order to make running commands easier.
      * Simply implement each subCommand, add them to the map, and it will run for you.
      */
-    protected abstract class SubCommand extends HeavenSubCommand
+    protected abstract class VelocitySubCommand extends HeavenSubCommand
     {
-        public SubCommand(String name, String permission)
+        public VelocitySubCommand(String name, String permission)
         {
             super(name, permission);
         }
 
-        public SubCommand(String name)
+        public VelocitySubCommand(String name)
         {
            super(name);
         }

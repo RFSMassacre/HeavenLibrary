@@ -1,11 +1,8 @@
 package com.github.rfsmassacre.heavenlibrary.databases;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.sql.*;
-import java.util.Properties;
-import java.util.logging.Logger;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Handle MySQL databases.
@@ -59,10 +56,9 @@ public abstract class MariaDatabase extends SQLDatabase
     /**
      * Connect to database.
      * @throws SQLException Expected to throw if wrong parameters were entered or host is not up.
-     * @throws ClassNotFoundException Not expected to throw.
      */
     @Override
-    public void connect() throws SQLException, ClassNotFoundException, MalformedURLException
+    public void connect() throws SQLException
     {
         this.connection = DriverManager.getConnection("jdbc:mariadb://" + hostname + ":" + port + "/" + database,
                 username, password);

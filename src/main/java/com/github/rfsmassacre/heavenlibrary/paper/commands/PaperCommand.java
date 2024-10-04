@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,15 +37,9 @@ public abstract class PaperCommand extends HeavenCommand<CommandSender> implemen
         }
     }
 
-    protected final PaperConfiguration config;
-    protected final PaperLocale locale;
-
     public PaperCommand(HeavenPaperPlugin plugin, String commandName)
     {
-        super(plugin.getName().toLowerCase(), commandName);
-
-        this.config = plugin.getConfiguration();
-        this.locale = plugin.getLocale();
+        super(plugin.getConfiguration(), plugin.getLocale(), plugin.getName().toLowerCase(), commandName);
     }
 
     /**
@@ -150,7 +145,7 @@ public abstract class PaperCommand extends HeavenCommand<CommandSender> implemen
      * Adds subCommand to the map.
      * @param subCommand SubCommand.
      */
-    protected void addSubCommand(SubCommand subCommand)
+    protected void addSubCommand(PaperSubCommand subCommand)
     {
         subCommands.put(subCommand.getName(), subCommand);
     }
@@ -159,7 +154,7 @@ public abstract class PaperCommand extends HeavenCommand<CommandSender> implemen
      * Removes subCommand from the map.
      * @param subCommand SubCommand.
      */
-    protected void removeSubCommand(SubCommand subCommand)
+    protected void removeSubCommand(PaperSubCommand subCommand)
     {
         subCommands.remove(subCommand.getName());
     }
@@ -168,26 +163,16 @@ public abstract class PaperCommand extends HeavenCommand<CommandSender> implemen
      * Broken down commands within a larger command in order to make running commands easier.
      * Simply implement each subCommand, add them to the map, and it will run for you.
      */
-    protected abstract class SubCommand extends HeavenSubCommand
+    protected abstract class PaperSubCommand extends HeavenSubCommand
     {
-        public SubCommand(String name, String permission)
+        public PaperSubCommand(String name, String permission)
         {
             super(name, permission);
         }
 
-        public SubCommand(String name)
+        public PaperSubCommand(String name)
         {
             super(name);
-        }
-
-        /**
-         * Check if sender is a player. (This assumes the opposite is console.)
-         * @param sender CommandSender.
-         * @return Boolean: Whether it is the opposite of a player.
-         */
-        public boolean isConsole(CommandSender sender)
-        {
-            return !(sender instanceof Player);
         }
 
         /**

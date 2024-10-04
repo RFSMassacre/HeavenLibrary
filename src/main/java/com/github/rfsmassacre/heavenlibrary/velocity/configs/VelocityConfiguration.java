@@ -1,8 +1,8 @@
 package com.github.rfsmassacre.heavenlibrary.velocity.configs;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.ConfigurationData;
-import com.github.rfsmassacre.heavenlibrary.velocity.managers.VelocityYamlManager;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
+import com.github.rfsmassacre.heavenlibrary.velocity.managers.VelocityYamlManager;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 

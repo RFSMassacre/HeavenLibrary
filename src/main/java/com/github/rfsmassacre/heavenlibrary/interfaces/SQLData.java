@@ -1,6 +1,5 @@
 package com.github.rfsmassacre.heavenlibrary.interfaces;
 
-import java.net.MalformedURLException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -13,7 +12,7 @@ public interface SQLData
      * Connect to database.
      * @throws SQLException Exception.
      */
-    void connect() throws SQLException, ClassNotFoundException, MalformedURLException;
+    void connect() throws SQLException;
 
     /**
      * Disconnect from database.
