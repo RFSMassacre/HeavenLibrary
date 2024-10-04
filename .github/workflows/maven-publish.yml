@@ -21,5 +21,4 @@ jobs:
         with:
           name: HeavenLibrary
           path: |
-            HeavenLibrary-velocity/target/HeavenLibrary-Velocity-*.jar
-            HeavenLibrary-paper/target/HeavenLibrary-Paper-*.jar
+            HeavenLibrary-*.jar
