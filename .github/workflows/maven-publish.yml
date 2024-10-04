@@ -20,4 +20,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: HeavenLibrary
-          path: ./target/HeavenLibrary-Paper-*.jar
+          path: ./target/HeavenLibrary-*.jar
