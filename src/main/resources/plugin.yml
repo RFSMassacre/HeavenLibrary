@@ -1,0 +1,4 @@
+name: HeavenLibrary
+version: '1.0-SNAPSHOT'
+main: com.github.rfsmassacre.heavenlibrary.HeavenLibrary
+api-version: '1.21'
