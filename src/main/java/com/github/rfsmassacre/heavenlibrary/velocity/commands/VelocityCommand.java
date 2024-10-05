@@ -1,26 +1,26 @@
 package com.github.rfsmassacre.heavenlibrary.velocity.commands;
 
-import com.github.rfsmassacre.heavenlibrary.commands.HeavenCommand;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
-import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityConfiguration;
-import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityLocale;
 import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
  * Easier way to set up commands for Spigot Plugins.
  */
 @SuppressWarnings("unused")
-public abstract class VelocityCommand extends HeavenCommand<CommandSource> implements SimpleCommand
+public class VelocityCommand extends SimpleVelocityCommand
 {
+    private final LinkedHashMap<String, VelocitySubCommand> subCommands;
+
     public VelocityCommand(HeavenVelocityPlugin plugin, String commandName)
     {
-        super(plugin.getConfiguration(), plugin.getLocale(), ((Plugin) plugin).id(), commandName);
+        super(plugin, commandName);
+
+        this.subCommands = new LinkedHashMap<>();
     }
 
     /**
@@ -164,40 +164,5 @@ public abstract class VelocityCommand extends HeavenCommand<CommandSource> imple
                 onFail(sender);
             }
         }
-
-        /**
-         * When the command is run.
-         * @param sender CommandSender.
-         * @param args Array of arguments.
-         */
-        protected abstract void onRun(CommandSource sender, String[] args);
-
-        /**
-         * List of suggestions
-         * @param sender CommandSender.
-         * @param args Array of arguments.
-         * @return List of suggestions.
-         */
-        public abstract List<String> onTabComplete(CommandSource sender, String[] args);
-    }
-
-    /**
-     * When the command fails.
-     * @param sender CommandSender.
-     */
-    @Override
-    protected void onFail(CommandSource sender)
-    {
-        locale.sendLocale(sender, "invalid.no-perm");
-    }
-
-    /**
-     * When the command does not meet the argument requirements.
-     * @param sender CommandSender.
-     */
-    @Override
-    protected void onInvalidArgs(CommandSource sender)
-    {
-        locale.sendLocale(sender, "invalid.command", "{command}", commandName);
     }
 }

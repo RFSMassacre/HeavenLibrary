@@ -4,7 +4,6 @@ import com.github.rfsmassacre.heavenlibrary.interfaces.ConfigurationData;
 import com.github.rfsmassacre.heavenlibrary.interfaces.LocaleData;
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @SuppressWarnings({"unused", "rawuse"})
@@ -12,7 +11,6 @@ public abstract class HeavenCommand<T>
 {
     protected final String pluginName;
     protected final String commandName;
-    protected final LinkedHashMap<String, HeavenSubCommand> subCommands;
     protected final ConfigurationData<?> config;
     protected final LocaleData<T, ?> locale;
 
@@ -20,27 +18,8 @@ public abstract class HeavenCommand<T>
     {
         this.pluginName = pluginName;
         this.commandName = commandName;
-        this.subCommands = new LinkedHashMap<>();
         this.config = config;
         this.locale = locale;
-    }
-
-    /**
-     * Adds subCommand to the map.
-     * @param subCommand SubCommand.
-     */
-    protected void addSubCommand(HeavenSubCommand subCommand)
-    {
-        subCommands.put(subCommand.name, subCommand);
-    }
-
-    /**
-     * Removes subCommand from the map.
-     * @param subCommand SubCommand.
-     */
-    protected void removeSubCommand(HeavenSubCommand subCommand)
-    {
-        subCommands.remove(subCommand.name);
     }
 
     /**
