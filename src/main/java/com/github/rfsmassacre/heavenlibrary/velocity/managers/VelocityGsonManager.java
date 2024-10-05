@@ -43,18 +43,6 @@ public abstract class VelocityGsonManager<T> extends GsonManager<T>
     }
 
     /**
-     * Write new file with internal file contents asynchronously.
-     *
-     * @param fileName Name of file.
-     * @param overwrite Make new file over already existing file.
-     */
-    public void copyAsync(String fileName, boolean overwrite)
-    {
-        plugin.getServer().getScheduler().buildTask(plugin, () -> copy(fileName, overwrite)).delay(1L,
-                TimeUnit.SECONDS).schedule();
-    }
-
-    /**
      * Write object to file asynchronously.
      *
      * @param fileName Name of file.

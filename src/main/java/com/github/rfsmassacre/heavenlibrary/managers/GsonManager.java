@@ -126,48 +126,6 @@ public abstract class GsonManager<T> implements MultiFileData<T>
     public abstract void readAsync(String fileName, Consumer<T> callback);
 
     /**
-     * Write new file with internal file contents.
-     *
-     * @param fileName Name of file.
-     * @param overwrite Make new file over already existing file.
-     */
-    @Override
-    public void copy(String fileName, boolean overwrite)
-    {
-        InputStream stream = getResource(fileName);
-        InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(stream));
-        T t = gson.fromJson(reader, clazz);
-        try
-        {
-            File file = getFile(fileName);
-            if (overwrite)
-            {
-                file.delete();
-            }
-
-            file.createNewFile();
-            FileWriter writer = new FileWriter(file);
-            gson.toJson(t, writer);
-            writer.flush();
-            writer.close();
-        }
-        catch (IOException exception)
-        {
-            exception.printStackTrace();
-        }
-    }
-
-    protected abstract InputStream getResource(String fileName);
-
-    /**
-     * Write new file with internal file contents asynchronously.
-     *
-     * @param fileName Name of file.
-     * @param overwrite Make new file over already existing file.
-     */
-    public abstract void copyAsync(String fileName, boolean overwrite);
-
-    /**
      * Write object to file.
      * Please note that all objects inside objects have to be serializable or else you will get an exception on writing.
      *

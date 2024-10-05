@@ -1,6 +1,8 @@
 package com.github.rfsmassacre.heavenlibrary.interfaces;
 
 import java.sql.*;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Implement for manipulation of any kind of database.
@@ -21,11 +23,17 @@ public interface SQLData
     void close() throws SQLException;
 
     /**
-     * Add object into database.
+     * Insert object into database.
      * @param t T.
      * @throws SQLException Exception
      */
-    <T> void add(String mainKey, T t) throws SQLException;
+    <T> void insert(String mainKey, T t) throws SQLException;
+
+    /**
+     * Insert object into database asynchronously.
+     * @param t T.
+     */
+    <T> void insertAsync(String mainKey, T t);
 
     /**
      * Update object into database.
@@ -35,6 +43,12 @@ public interface SQLData
     <T> void update(String mainKey, T t) throws SQLException;
 
     /**
+     * Update object into database asynchronously.
+     * @param t T.
+     */
+    <T> void updateAsync(String mainKey, T t);
+
+    /**
      * Query database to retrieve object.
      * @return Object type from database.
      * @throws SQLException Exception.
@@ -42,9 +56,31 @@ public interface SQLData
     <T> T query(String mainKey, Class<T> clazz) throws SQLException;
 
     /**
+     * Query database to retrieve object asynchronously through a callback.
+     */
+    <T> void queryAsync(String mainKey, Class<T> clazz, Consumer<T> callback);
+
+    /**
      * Delete object from the database.
      */
     <T> void delete(String mainKey, Class<T> clazz) throws SQLException;
+
+    /**
+     * Delete object from the database asynchronously.
+     */
+    <T> void deleteAsync(String mainKey, Class<T> clazz);
+
+    /**
+     * Query database to retrieve all objects.
+     * @return Set of object types from database.
+     * @throws SQLException Exception.
+     */
+    <T> Set<T> queryAll(Class<T> clazz) throws SQLException;
+
+    /**
+     * Query database to retrieve all objects asynchronously through a callback.
+     */
+    <T> void queryAllAsync(Class<T> clazz, Consumer<Set<T>> callback);
 
     ResultSet executeQuery(String sql) throws SQLException;
 

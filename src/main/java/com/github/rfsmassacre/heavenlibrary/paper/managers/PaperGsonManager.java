@@ -69,25 +69,6 @@ public class PaperGsonManager<T> extends GsonManager<T>
     {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(read(fileName)));
     }
-
-    @Override
-    protected InputStream getResource(String fileName)
-    {
-        return plugin.getResource(fileName);
-    }
-
-    /**
-     * Write new file with internal file contents asynchronously.
-     *
-     * @param fileName Name of file.
-     * @param overwrite Make new file over already existing file.
-     */
-    @Override
-    public void copyAsync(String fileName, boolean overwrite)
-    {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> copy(fileName, overwrite));
-    }
-
     /**
      * Write object to file asynchronously.
      *

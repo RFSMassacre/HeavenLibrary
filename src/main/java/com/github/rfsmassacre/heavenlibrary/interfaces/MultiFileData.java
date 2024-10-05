@@ -17,15 +17,6 @@ public interface MultiFileData<T>
     void readAsync(String fileName, Consumer<T> callback);
 
     /**
-     * Copy a new file with format.
-     * @param fileName Name of file.
-     * @param overwrite Make new file over already existing file.
-     */
-    void copy(String fileName, boolean overwrite);
-
-    void copyAsync(String fileName, boolean overwrite);
-
-    /**
      * Write data of object into the file.
      * @param fileName Name of file.
      * @param t Data or object to be updated into file.
