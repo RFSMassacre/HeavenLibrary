@@ -2,9 +2,6 @@ package com.github.rfsmassacre.heavenlibrary.databases;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Set;
-import java.util.function.Consumer;
-
 
 /**
  * Handle MySQL databases.
@@ -64,6 +61,4 @@ public abstract class MySQLDatabase extends SQLDatabase
         this.connection = DriverManager.getConnection("jdbc:mysql://" + hostname + ":" + port + "/" + database,
                 username, password);
     }
-
-    public abstract <T> void queryAllAsync(Class<T> clazz, Consumer<Set<T>> callback);
 }

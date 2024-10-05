@@ -9,3 +9,5 @@ You can quickly download an artifact from a commit if you don't know how to comp
 ## Contributing
 
 I'm always looking for others to add more features or implementations to other Minecraft Java server platforms. Pull requests and forks are welcome!
+
+## Usage

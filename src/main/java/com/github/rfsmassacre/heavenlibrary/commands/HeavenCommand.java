@@ -22,6 +22,11 @@ public abstract class HeavenCommand<T>
         this.locale = locale;
     }
 
+    public String getPermission()
+    {
+        return pluginName + "." + commandName;
+    }
+
     /**
      * Broken down commands within a larger command in order to make running commands easier.
      * Simply implement each subCommand, add them to the map, and it will run for you.

@@ -1,21 +1,18 @@
 package com.github.rfsmassacre.heavenlibrary.managers;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.github.rfsmassacre.heavenlibrary.interfaces.MultiFileData;
+
+import java.io.*;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings({"unused", "ResultOfMethodCallIgnored", "CallToPrintStackTrace"})
-public class TextManager
+public abstract class TextManager implements MultiFileData<List<String>>
 {
-    protected final HashMap<String, List<String>> textCache;
     private final File folder;
 
     public TextManager(File dataFolder, String folderName)
     {
-        this.textCache = new HashMap<>();
         this.folder = new File(dataFolder + File.separator + folderName);
         if (!folder.exists())
         {
@@ -23,21 +20,33 @@ public class TextManager
         }
     }
 
-    public List<String> loadTextFile(String fileName)
+    /**
+     * Read object from file.
+     * Please note that all objects inside objects have to be serializable or else you will get an exception on reading.
+     *
+     * @param fileName Name of file.
+     * @return Object from file.
+     */
+    @Override
+    public List<String> read(String fileName)
     {
-        if (!textCache.containsKey(fileName))
+        File file = getFile(fileName);
+        if (file.exists())
         {
-            cacheTextFile(fileName);
+            try
+            {
+                return Files.readAllLines(file.toPath());
+            }
+            catch (IOException exception)
+            {
+                exception.printStackTrace();
+            }
         }
 
-        return textCache.get(fileName);
+        return null;
     }
 
-    public void clearCacheFiles()
-    {
-        textCache.clear();
-    }
-
+    @Override
     public void write(String fileName, List<String> lines)
     {
         try
@@ -61,29 +70,49 @@ public class TextManager
 
             writer.flush();
             writer.close();
-
         }
         catch (IOException exception)
         {
-            //Do nothing
             exception.printStackTrace();
         }
     }
 
-    public void cacheTextFile(String fileName)
+    /**
+     * Delete specified file.
+     *
+     * @param fileName Name of file.
+     */
+    @Override
+    public void delete(String fileName)
     {
-        try
+        File file = getFile(fileName);
+        if (file.exists())
         {
-            textCache.put(fileName, Files.readAllLines(getFile(fileName).toPath()));
-        }
-        catch (IOException exception)
-        {
-            exception.printStackTrace();
+            file.delete();
         }
     }
 
+    @Override
+    public Set<List<String>> all()
+    {
+        Set<List<String>> all = new HashSet<>();
+        File[] files = folder.listFiles();
+        if (files == null)
+        {
+            return all;
+        }
+
+        for (File file : files)
+        {
+            all.add(read(file.getName()));
+        }
+
+        return all;
+    }
+
+    @Override
     public File getFile(String fileName)
     {
-        return new File(folder + File.separator + fileName);
+        return new File(folder, fileName + (fileName.endsWith(".txt") ? "" : ".txt"));
     }
 }
