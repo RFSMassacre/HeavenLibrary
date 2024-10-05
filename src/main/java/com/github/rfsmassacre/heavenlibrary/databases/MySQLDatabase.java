@@ -1,7 +1,14 @@
 package com.github.rfsmassacre.heavenlibrary.databases;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Handle MySQL databases.
@@ -60,5 +67,77 @@ public abstract class MySQLDatabase extends SQLDatabase
     {
         this.connection = DriverManager.getConnection("jdbc:mysql://" + hostname + ":" + port + "/" + database,
                 username, password);
+    }
+
+    @Override
+    public <T> void insert(String mainKey, T t) throws SQLException
+    {
+        String sql = SQLPreset.INSERT.parseSQL(t.getClass());
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setString(1, mainKey);
+        statement.setString(2, new Gson().toJson(t));
+        statement.executeUpdate();
+    }
+
+    @Override
+    public <T> void update(String mainKey, T t) throws SQLException
+    {
+        insert(mainKey, t);
+    }
+
+    @Override
+    public <T> void updateAsync(String mainKey, T t)
+    {
+        insertAsync(mainKey, t);
+    }
+
+    @Override
+    public <T> T query(String mainKey, Class<T> clazz) throws SQLException
+    {
+        PreparedStatement statement = connection.prepareStatement(SQLPreset.SELECT.parseSQL(clazz));
+        statement.setString(1, mainKey);
+        ResultSet result = statement.executeQuery();
+        Gson gson = new Gson();
+        if (result.next())
+        {
+            String data = result.getString("data");
+            if (data == null)
+            {
+                throw new SQLException("Data of " + mainKey + " is null!");
+            }
+
+            return gson.fromJson(data, clazz);
+        }
+        else
+        {
+            throw new SQLException("Could not find with " + mainKey);
+        }
+    }
+
+    @Override
+    public <T> Set<T> queryAll(Class<T> clazz) throws SQLException
+    {
+        PreparedStatement statement = connection.prepareStatement(SQLPreset.SELECT_ALL.parseSQL(clazz));
+        ResultSet result = statement.executeQuery();
+        Set<T> set = new HashSet<>();
+        Gson gson = new GsonBuilder().create();
+        while (result.next())
+        {
+            String data = result.getString("data");
+            if (data != null)
+            {
+                set.add(gson.fromJson(data, clazz));
+            }
+        }
+
+        return set;
+    }
+
+    @Override
+    public <T> void delete(String mainKey, Class<T> clazz) throws SQLException
+    {
+        PreparedStatement statement = connection.prepareStatement(SQLPreset.DELETE.parseSQL(clazz));
+        statement.setString(1, mainKey);
+        statement.executeUpdate();
     }
 }
