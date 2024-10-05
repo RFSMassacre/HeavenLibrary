@@ -1,11 +1,11 @@
 package com.github.rfsmassacre.heavenlibrary.interfaces;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Implement for manipulation of any kind of database.
  */
+@SuppressWarnings({"unused"})
 public interface SQLData
 {
     /**

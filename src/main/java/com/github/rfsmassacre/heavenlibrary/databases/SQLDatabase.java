@@ -3,7 +3,6 @@ package com.github.rfsmassacre.heavenlibrary.databases;
 import com.github.rfsmassacre.heavenlibrary.interfaces.SQLData;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -11,15 +10,69 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
+import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "CallToPrintStackTrace", "ResultOfMethodCallIgnored"})
 public abstract class SQLDatabase implements SQLData
 {
+    private static class SQLDriver implements Driver
+    {
+        private final Driver driver;
+
+        public SQLDriver(Driver driver)
+        {
+            this.driver = driver;
+        }
+
+        @Override
+        public Connection connect(String url, Properties info) throws SQLException
+        {
+            return driver.connect(url, info);
+        }
+
+        @Override
+        public boolean acceptsURL(String url) throws SQLException
+        {
+            return driver.acceptsURL(url);
+        }
+
+        @Override
+        public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) throws SQLException
+        {
+            return driver.getPropertyInfo(url, info);
+        }
+
+        @Override
+        public int getMajorVersion()
+        {
+            return driver.getMajorVersion();
+        }
+
+        @Override
+        public int getMinorVersion()
+        {
+            return driver.getMinorVersion();
+        }
+
+        @Override
+        public boolean jdbcCompliant()
+        {
+            return driver.jdbcCompliant();
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException
+        {
+            return driver.getParentLogger();
+        }
+    }
+
     public enum SQLPreset
     {
-        CREATE_TABLE("CREATE TABLE IF NOT EXISTS tableName (id VARCHAR(32) PRIMARY KEY, data JSON)"),
-        INSERT("INSERT INTO tableName (name, data) VALUES (?, ?)"),
+        CREATE_TABLE("CREATE TABLE IF NOT EXISTS tableName (id VARCHAR(32) PRIMARY KEY, data LONGTEXT)"),
+        INSERT("INSERT INTO tableName (id, data) VALUES (?, ?)"),
         SELECT("SELECT data FROM tableName WHERE id = ?"),
         SELECT_ALL("SELECT data FROM tableName"),
         DELETE("DELETE FROM tableName WHERE id = ?");
@@ -31,10 +84,30 @@ public abstract class SQLDatabase implements SQLData
             this.sql = sql;
         }
 
-        public String parseSQL(String database, Class<?> clazz)
+        public String parseSQL(Class<?> clazz)
         {
-            return sql.replaceAll(Pattern.quote("database"), database)
-                    .replaceAll(Pattern.quote("tableName"), clazz.getSimpleName());
+            return sql.replaceAll(Pattern.quote("tableName"), clazz.getSimpleName());
+        }
+    }
+
+    public static void setupDrivers(File folder, String driverName, String url, String className)
+    {
+        try
+        {
+            File driverFile = new File(folder, driverName);
+            if (!driverFile.exists())
+            {
+                driverFile.createNewFile();
+                InputStream in = URI.create(url).toURL().openStream();
+                Files.copy(in, driverFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            URLClassLoader classLoader = new URLClassLoader(new URL[] { driverFile.toURI().toURL() });
+            Class.forName(className, true, classLoader);
+        }
+        catch (Exception exception)
+        {
+            exception.printStackTrace();
         }
     }
 
@@ -65,21 +138,5 @@ public abstract class SQLDatabase implements SQLData
     {
         PreparedStatement statement = connection.prepareStatement(sql);
         return statement.executeUpdate();
-    }
-
-    public static void downloadDrivers(File outputFile, String driverUrl) throws IOException
-    {
-        InputStream in = URI.create(driverUrl).toURL().openStream();
-        Files.copy(in, outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    public static void loadDriver(File file, String className) throws Exception
-    {
-        try (URLClassLoader classLoader = new URLClassLoader(new URL[] { file.toURI().toURL() },
-                System.class.getClassLoader()))
-        {
-            Driver driver = (Driver) Class.forName(className, true, classLoader).newInstance();
-            DriverManager.registerDriver(driver);
-        }
     }
 }

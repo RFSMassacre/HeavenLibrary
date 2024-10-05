@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
+@SuppressWarnings({"unused"})
 public abstract class HeavenPaperPlugin extends JavaPlugin
 {
     protected PaperConfiguration configuration;

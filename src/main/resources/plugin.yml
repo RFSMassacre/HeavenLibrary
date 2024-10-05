@@ -1,4 +1,4 @@
 name: HeavenLibrary
-version: '1.0-SNAPSHOT'
+version: '${project.version}'
 main: com.github.rfsmassacre.heavenlibrary.paper.HeavenLibraryPaper
 api-version: '1.21'

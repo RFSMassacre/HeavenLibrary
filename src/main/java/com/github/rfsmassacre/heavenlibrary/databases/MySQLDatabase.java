@@ -4,15 +4,18 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+
 /**
  * Handle MySQL databases.
  */
 @SuppressWarnings({"unused", "CallToPrintStackTrace"})
-public abstract class MariaDatabase extends SQLDatabase
+public abstract class MySQLDatabase extends SQLDatabase
 {
-    public static final String DRIVER_URL = "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/3.4.1/mariadb-java-client-3.4.1.jar";
-    public static final String DRIVER = "mariadb-java-client-3.4.1.jar";
-    public static final String CLASS_NAME = "org.mariadb.jdbc.Driver";
+    public static final String CLASS_NAME = "com.mysql.cj.jdbc.Driver";
+    public static final String VERSION = "9.0.0";
+    public static final String DRIVER = "mysql-connector-j-" + VERSION + ".jar";
+    public static final String DRIVER_URL = "https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/" + VERSION +
+            "/" + DRIVER;
 
     //Database information.
     protected final String hostname;
@@ -31,7 +34,7 @@ public abstract class MariaDatabase extends SQLDatabase
      * @param port Port number of database.
      * @param ssl Use a secured connection.
      */
-    public MariaDatabase(String hostName, String database, String username, String password, int port, boolean ssl)
+    public MySQLDatabase(String hostName, String database, String username, String password, int port, boolean ssl)
     {
         this.hostname = hostName;
         this.database = database;
@@ -43,9 +46,6 @@ public abstract class MariaDatabase extends SQLDatabase
         try
         {
             connect();
-            String sql = "USE " + database;
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.executeUpdate();
         }
         catch (Exception exception)
         {
@@ -60,7 +60,7 @@ public abstract class MariaDatabase extends SQLDatabase
     @Override
     public void connect() throws SQLException
     {
-        this.connection = DriverManager.getConnection("jdbc:mariadb://" + hostname + ":" + port + "/" + database,
+        this.connection = DriverManager.getConnection("jdbc:mysql://" + hostname + ":" + port + "/" + database,
                 username, password);
     }
 }
