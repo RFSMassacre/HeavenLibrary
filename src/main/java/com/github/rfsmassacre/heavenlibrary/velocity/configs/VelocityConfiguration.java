@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.velocity.configs;
 import com.github.rfsmassacre.heavenlibrary.interfaces.ConfigurationData;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import com.github.rfsmassacre.heavenlibrary.velocity.managers.VelocityYamlManager;
+import com.velocitypowered.api.plugin.Plugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -24,11 +25,6 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     public VelocityConfiguration(HeavenVelocityPlugin plugin, String folderName, String fileName)
     {
         super(plugin, folderName, fileName);
-    }
-    
-    private Object splitKeys(String key)
-    {
-        return key.split("\\.");
     }
     
     /**

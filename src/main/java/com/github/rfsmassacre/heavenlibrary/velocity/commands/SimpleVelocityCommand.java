@@ -4,13 +4,12 @@ import com.github.rfsmassacre.heavenlibrary.commands.HeavenCommand;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.plugin.Plugin;
 
 public abstract class SimpleVelocityCommand extends HeavenCommand<CommandSource> implements SimpleCommand
 {
     protected SimpleVelocityCommand(HeavenVelocityPlugin plugin, String commandName)
     {
-        super(plugin.getConfiguration(), plugin.getLocale(), ((Plugin) plugin).id(), commandName);
+        super(plugin.getConfiguration(), plugin.getLocale(), plugin.getId(), commandName);
     }
 
     /**

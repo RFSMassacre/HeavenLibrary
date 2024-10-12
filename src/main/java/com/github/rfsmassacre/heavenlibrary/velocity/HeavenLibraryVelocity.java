@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.velocity;
 import com.github.rfsmassacre.heavenlibrary.databases.MySQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.databases.SQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityConfiguration;
+import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityLocale;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -16,7 +17,12 @@ import java.io.File;
 import java.nio.file.Path;
 
 @Getter
-@Plugin(id = "heavenlibrary", name = "HeavenLibrary", version = "1.0-SNAPSHOT")
+@Plugin
+(
+    id = "heavenlibrary",
+    name = "HeavenLibrary",
+    version = "1.0-SNAPSHOT"
+)
 public final class HeavenLibraryVelocity extends HeavenVelocityPlugin
 {
     @Getter
@@ -25,7 +31,7 @@ public final class HeavenLibraryVelocity extends HeavenVelocityPlugin
     @Inject
     public HeavenLibraryVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory)
     {
-        super(server, logger, dataDirectory);
+        super("heavenlibrary", server, logger, dataDirectory);
     }
 
     @Subscribe

@@ -27,11 +27,6 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
     {
         super(plugin, folderName, fileName);
     }
-    
-    private Object splitKeys(String key)
-    {
-        return key.split("\\.");
-    }
 
     /**
      * Provide easy function to reload configuration without needing parameters.

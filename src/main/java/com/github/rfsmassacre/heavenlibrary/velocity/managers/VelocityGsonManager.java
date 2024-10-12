@@ -2,7 +2,9 @@ package com.github.rfsmassacre.heavenlibrary.velocity.managers;
 
 import com.github.rfsmassacre.heavenlibrary.managers.GsonManager;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
+import com.velocitypowered.api.plugin.Plugin;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +15,7 @@ import java.util.function.Consumer;
  *
  * @param <T> Class type of object to be saved or read.
  */
-public abstract class VelocityGsonManager<T> extends GsonManager<T>
+public class VelocityGsonManager<T> extends GsonManager<T>
 {
     private final HeavenVelocityPlugin plugin;
 

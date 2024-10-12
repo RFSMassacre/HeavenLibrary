@@ -87,7 +87,8 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
     {
         Title.Times times = Title.Times.times(Duration.ofSeconds(fadeIn / 20), Duration.ofSeconds(stay / 20),
                 Duration.ofSeconds(fadeOut / 20));
-        Title titleMessage = Title.title(toComponent(title, holders), toComponent(subtitle, holders), times);
+        Title titleMessage = Title.title(toComponent(null, title, holders), toComponent(null, subtitle,
+                holders), times);
         receiver.showTitle(titleMessage);
     }
 

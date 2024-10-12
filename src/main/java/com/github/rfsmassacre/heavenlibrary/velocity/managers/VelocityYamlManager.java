@@ -60,6 +60,11 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
         this.yaml = read();
     }
 
+    protected String[] splitKeys(String key)
+    {
+        return key.split("\\.");
+    }
+
     /**
      * Read from file and convert into whatever data or object needed.
      *

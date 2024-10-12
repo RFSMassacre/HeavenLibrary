@@ -10,6 +10,7 @@ import java.util.*;
 public abstract class TextManager implements MultiFileData<List<String>>
 {
     private final File folder;
+    private final Map<String, List<String>> cache;
 
     public TextManager(File dataFolder, String folderName)
     {
@@ -17,6 +18,24 @@ public abstract class TextManager implements MultiFileData<List<String>>
         if (!folder.exists())
         {
             folder.mkdirs();
+        }
+
+        this.cache = new HashMap<>();
+        loadTexts();
+    }
+
+    public List<String> getText(String fileName)
+    {
+        return cache.get(fileName);
+    }
+
+    public void loadTexts()
+    {
+        cache.clear();
+        for (File file : folder.listFiles())
+        {
+            List<String> text = read(file.getName());
+            cache.put(file.getName(), text);
         }
     }
 

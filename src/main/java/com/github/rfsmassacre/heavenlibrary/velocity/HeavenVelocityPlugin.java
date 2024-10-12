@@ -13,6 +13,7 @@ import java.nio.file.Path;
 @Getter
 public abstract class HeavenVelocityPlugin
 {
+    protected final String id;
     @Inject
     protected final ProxyServer server;
     @Inject
@@ -25,8 +26,9 @@ public abstract class HeavenVelocityPlugin
     protected VelocityLocale locale;
 
     @Inject
-    public HeavenVelocityPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory)
+    public HeavenVelocityPlugin(String id, ProxyServer server, Logger logger, @DataDirectory Path dataDirectory)
     {
+        this.id = id;
         this.server = server;
         this.logger = logger;
         this.dataDirectory = dataDirectory;

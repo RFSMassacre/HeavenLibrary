@@ -55,11 +55,6 @@ public interface LocaleData<T, C> extends ReloadableData
 
     C toComponent(String hover, String message, String... holders);
 
-    default C toComponent(String message, String... holders)
-    {
-        return toComponent(null, message, holders);
-    }
-
     /**
      * Send formatted string to receiver.
      * @param receiver Player or console receiving message.
