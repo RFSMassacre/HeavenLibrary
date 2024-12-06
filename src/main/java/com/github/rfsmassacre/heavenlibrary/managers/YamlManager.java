@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.managers;
 import com.github.rfsmassacre.heavenlibrary.interfaces.FileData;
 import com.github.rfsmassacre.heavenlibrary.interfaces.ReloadableData;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
@@ -30,6 +31,9 @@ public abstract class YamlManager<T extends X, X> implements FileData<T>, Reload
         }
 
         this.fileName = fileName;
+        this.defaultYaml = readDefault();
+
+        reload();
     }
 
     /**
@@ -38,13 +42,28 @@ public abstract class YamlManager<T extends X, X> implements FileData<T>, Reload
     @Override
     public void reload()
     {
-        try
+        this.yaml = read();
+    }
+
+    @Override
+    public void copy(boolean overwrite)
+    {
+        if (!getFile().exists())
         {
-            this.yaml = read();
+            write(defaultYaml);
         }
-        catch (IOException exception)
+        else
         {
-            exception.printStackTrace();
+            if (overwrite)
+            {
+                write(defaultYaml);
+            }
+            else
+            {
+                reload();
+                update();
+                write(yaml);
+            }
         }
     }
 
@@ -63,8 +82,12 @@ public abstract class YamlManager<T extends X, X> implements FileData<T>, Reload
 
     /**
      * Copy section of default file to new file.
+     *
+     * @param source Original section.
+     * @param destination Destination section.
+     * @param path Path to section. (Can be null if not needed.)
      */
-    public abstract void copySection(X source, X destination, String path);
+    public abstract void copySection(X source, X destination, @Nullable String path);
 
     /**
      * Retrieve file object from file name.

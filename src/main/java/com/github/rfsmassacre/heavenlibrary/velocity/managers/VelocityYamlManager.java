@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.velocity.managers;
 import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
 public abstract class VelocityYamlManager extends YamlManager<CommentedConfigurationNode, ConfigurationNode>
 {
     protected final HeavenVelocityPlugin plugin;
-    private YamlConfigurationLoader loader;
+    private final YamlConfigurationLoader loader;
 
     /**
      * Constructor for YamlManager.
@@ -35,37 +36,8 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
         super(plugin.getDataDirectory().toFile(), folderName, fileName);
 
         this.plugin = plugin;
-
-        URL url = plugin.getClass().getResource(File.separator + fileName);
-        if (url == null)
-        {
-            plugin.getLogger().info("URL is not defined for " + fileName);
-            return;
-        }
-
-
-        File file = getFile();
-        loader = YamlConfigurationLoader.builder().file(file).build();
-        try
-        {
-            this.defaultYaml = YamlConfigurationLoader.builder().url(url).build().load();
-        }
-        catch (ConfigurateException exception)
-        {
-            return;
-        }
-
-        if (!file.exists())
-        {
-            write(defaultYaml);
-        }
-        else
-        {
-            update();
-            write(yaml);
-        }
-
-        this.yaml = read();
+        this.loader = YamlConfigurationLoader.builder().file(getFile()).build();
+        copy(false);
     }
 
     protected String[] splitKeys(String key)
@@ -92,6 +64,31 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
     }
 
     /**
+     * Read from inside the jar and convert into whatever data or object needed.
+     *
+     * @return Data or object read from inside the jar.
+     */
+    @Override
+    public CommentedConfigurationNode readDefault()
+    {
+        URL url = plugin.getClass().getResource(File.separator + fileName);
+        if (url == null)
+        {
+            plugin.getLogger().info("URL is not defined for " + fileName);
+            return null;
+        }
+
+        try
+        {
+            return YamlConfigurationLoader.builder().url(url).build().load();
+        }
+        catch (ConfigurateException exception)
+        {
+            return null;
+        }
+    }
+
+    /**
      * Read object from file asynchronously.
      *
      * @param callback Runnable that accepts object.
@@ -101,24 +98,6 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
     {
         plugin.getServer().getScheduler().buildTask(plugin, () -> callback.accept(read())).delay(1L,
                 TimeUnit.SECONDS).schedule();
-    }
-
-    /**
-     * Copy a new file with format.
-     *
-     * @param overwrite Make new file over already existing file.
-     */
-    @Override
-    public void copy(boolean overwrite)
-    {
-        if (overwrite)
-        {
-            write(defaultYaml);
-        }
-        else if (!getFile().exists())
-        {
-            write(defaultYaml);
-        }
     }
 
     /**

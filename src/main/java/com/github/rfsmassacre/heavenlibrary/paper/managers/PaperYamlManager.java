@@ -25,31 +25,14 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
      * Constructor for YamlManager.
      *
      * @param folderName Name of folder.
-     * @param fileName Name of file.
+     * @param fileName   Name of file.
      */
     public PaperYamlManager(JavaPlugin plugin, String folderName, String fileName)
     {
         super(plugin.getDataFolder(), folderName, fileName);
 
         this.plugin = plugin;
-        InputStream stream = plugin.getResource(fileName);
-        if (stream != null)
-        {
-            InputStreamReader reader = new InputStreamReader(stream);
-            this.defaultYaml = YamlConfiguration.loadConfiguration(reader);
-        }
-
-        if (!getFile().exists())
-        {
-            write(defaultYaml);
-        }
-        else
-        {
-            update();
-            write(yaml);
-        }
-
-        reload();
+        copy(false);
     }
 
     /**
@@ -60,7 +43,31 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
     @Override
     public FileConfiguration read()
     {
-        return YamlConfiguration.loadConfiguration(getFile());
+        File file = getFile();
+        if (file != null)
+        {
+            return YamlConfiguration.loadConfiguration(file);
+        }
+
+        return null;
+    }
+
+    /**
+     * Read from inside the jar and convert into whatever data or object needed.
+     *
+     * @return Data or object read from inside the jar.
+     */
+    @Override
+    public FileConfiguration readDefault()
+    {
+        InputStream stream = plugin.getResource(fileName);
+        if (stream != null)
+        {
+            InputStreamReader reader = new InputStreamReader(stream);
+            this.defaultYaml = YamlConfiguration.loadConfiguration(reader);
+        }
+
+        return null;
     }
 
     /**
@@ -117,30 +124,6 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
     public void readAsync(Consumer<FileConfiguration> callback)
     {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> callback.accept(read()));
-    }
-
-    /**
-     * Copy a new file with format.
-     * @param overwrite Make new file over already existing file.
-     */
-    @Override
-    public void copy(boolean overwrite)
-    {
-        InputStream stream = plugin.getResource(fileName);
-        if (stream != null)
-        {
-            InputStreamReader reader = new InputStreamReader(stream);
-            FileConfiguration configuration = YamlConfiguration.loadConfiguration(reader);
-            File file = getFile();
-            if (overwrite)
-            {
-                write(configuration);
-            }
-            else if (!file.exists())
-            {
-                write(configuration);
-            }
-        }
     }
 
     /**
