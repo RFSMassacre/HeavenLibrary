@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class PageIcon extends Icon
 {
-    private final Menu menu;
+    protected final Menu menu;
 
     public PageIcon(int x, int y, String displayName, Menu menu)
     {

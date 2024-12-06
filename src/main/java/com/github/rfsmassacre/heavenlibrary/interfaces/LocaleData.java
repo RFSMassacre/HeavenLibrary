@@ -86,7 +86,7 @@ public interface LocaleData<T, C> extends ReloadableData
      */
     default void sendLocale(T receiver, String key, String... holders)
     {
-        sendLocale(receiver, false, key, holders);
+        sendLocale(receiver, true, key, holders);
     }
 
     /**
@@ -186,7 +186,16 @@ public interface LocaleData<T, C> extends ReloadableData
                     ""));
         }
 
-        string = string.replaceAll("([§&])[0-9a-fk-or]", "");
+        string = string.replaceAll("[&§][0-9]", "");
+        string = string.replaceAll("[&§][a-f]", "");
+        string = string.replaceAll("[&§][A-F]", "");
+        string = string.replaceAll("[&§]([rR])", "");
+        string = string.replaceAll("[&§]([lL])", "");
+        string = string.replaceAll("[&§]([oO])", "");
+        string = string.replaceAll("[&§]([nN])", "");
+        string = string.replaceAll("[&§]([mM])", "");
+        string = string.replaceAll("[&§]([kK])", "");
+        string = string.replaceAll("([§&])[x]", "");
         return string;
     }
 

@@ -57,7 +57,7 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
 
     public void sendMessage(CommandSender receiver, boolean usePrefix, String message, String... holders)
     {
-        if (message == null || message.isBlank())
+        if (message == null || message.isBlank() || receiver == null)
         {
             return;
         }

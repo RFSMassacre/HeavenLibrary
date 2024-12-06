@@ -203,8 +203,7 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
                 string = string.replace(matcher.group(), "" + hexColor);
             }
         }
-
-        string = string.replaceAll("&", "§");
+        
         TextComponent component = Component.text(string);
         return LegacyComponentSerializer.legacySection().serialize(component);
     }

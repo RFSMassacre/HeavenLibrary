@@ -1,6 +1,8 @@
 package com.github.rfsmassacre.heavenlibrary.paper.managers;
 
 import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,7 +17,7 @@ import java.util.function.Consumer;
  * Spigot sided manager for YML files.
  */
 @SuppressWarnings({"unused", "CallToPrintStackTrace"})
-public abstract class PaperYamlManager extends YamlManager<FileConfiguration>
+public abstract class PaperYamlManager extends YamlManager<FileConfiguration, ConfigurationSection>
 {
     protected final JavaPlugin plugin;
 
@@ -41,6 +43,11 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration>
         {
             write(defaultYaml);
         }
+        else
+        {
+            update();
+            write(yaml);
+        }
 
         reload();
     }
@@ -54,6 +61,51 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration>
     public FileConfiguration read()
     {
         return YamlConfiguration.loadConfiguration(getFile());
+    }
+
+    /**
+     * Provide an easy function to transfer new values from the default file to the new one without
+     * overwriting valid values.
+     */
+    @Override
+    public void update()
+    {
+        copySection(defaultYaml, yaml, null);
+    }
+
+    @Override
+    public void copySection(ConfigurationSection source, ConfigurationSection destination, String path)
+    {
+        for (String key : source.getKeys(false))
+        {
+            String fullPath = (path == null ? key : path + "." + key);
+
+            if (source.isConfigurationSection(key))
+            {
+                // If the key is a section, recurse into it
+                ConfigurationSection sourceSection = source.getConfigurationSection(key);
+                if (sourceSection == null)
+                {
+                    continue;
+                }
+
+                ConfigurationSection destinationSection = destination.getConfigurationSection(key);
+                if (destinationSection == null)
+                {
+                    destinationSection = destination.createSection(key);
+                }
+
+                copySection(sourceSection, destinationSection, fullPath);
+            }
+            else
+            {
+                // Copy only if the key does not exist or is null in the destination
+                if (!destination.contains(fullPath) || destination.get(fullPath) == null)
+                {
+                    destination.set(fullPath, source.get(key));
+                }
+            }
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.github.rfsmassacre.heavenlibrary.paper.shapes;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -12,6 +13,7 @@ import java.util.*;
  * This class is a region/cuboid from one location to another. It can be used for blocks protection and things like WorldEdit.
  * @author desht (Original code), KingFaris10 (Editor of code)
  */
+@Getter
 public class Cuboid implements Iterable<Block>, Cloneable
 {
     protected final String worldName;
@@ -26,7 +28,10 @@ public class Cuboid implements Iterable<Block>, Cloneable
      * @param l2 - The other corner
      */
     public Cuboid(Location l1, Location l2) {
-        if (!l1.getWorld().equals(l2.getWorld())) throw new IllegalArgumentException("Locations must be on the same world");
+        if (!l1.getWorld().equals(l2.getWorld())) {
+            throw new IllegalArgumentException("Locations must be on the same world");
+        }
+
         this.worldName = l1.getWorld().getName();
         this.x1 = Math.min(l1.getBlockX(), l2.getBlockX());
         this.y1 = Math.min(l1.getBlockY(), l2.getBlockY());
@@ -86,7 +91,7 @@ public class Cuboid implements Iterable<Block>, Cloneable
      * @param y2 - Y co-ordinate of corner 2
      * @param z2 - Z co-ordinate of corner 2
      */
-    private Cuboid(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
+    public Cuboid(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
         this.worldName = worldName;
         this.x1 = Math.min(x1, x2);
         this.x2 = Math.max(x1, x2);
@@ -567,6 +572,26 @@ public class Cuboid implements Iterable<Block>, Cloneable
             }
         }
         return res;
+    }
+
+    /**
+     * Calculates the shortest distance from a Location to the walls of this Cuboid.
+     * Returns 0 if the location is inside the cuboid.
+     *
+     * @param location The location to measure the distance from.
+     * @return The shortest distance to the walls, or 0 if inside the cuboid.
+     */
+    public double getDistanceToWall(Location location)
+    {
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
+        int dx = Math.min(Math.abs(x - this.getLowerX()), Math.abs(x - this.getUpperX()));
+        int dy = Math.min(Math.abs(y - this.getLowerY()), Math.abs(y - this.getUpperY()));
+        int dz = Math.min(Math.abs(z - this.getLowerZ()), Math.abs(z - this.getUpperZ()));
+
+        // Return the shortest distance
+        return Math.min(dx, Math.min(dy, dz));
     }
 
     public Iterator<Block> iterator() {

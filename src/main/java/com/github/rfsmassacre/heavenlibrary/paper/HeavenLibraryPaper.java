@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.paper;
 import com.github.rfsmassacre.heavenlibrary.databases.MySQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.databases.SQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperConfiguration;
+import com.github.rfsmassacre.heavenlibrary.paper.menu.Menu;
 import lombok.Getter;
 
 import java.io.File;
@@ -29,6 +30,8 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
             SQLDatabase.setupDrivers(driverFolder, MySQLDatabase.DRIVER, MySQLDatabase.DRIVER_URL,
                     MySQLDatabase.CLASS_NAME);
         }
+
+        getServer().getPluginManager().registerEvents(new Menu.MenuListener(), this);
     }
 
     private boolean driverEnabled(String sqlType)

@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 @SuppressWarnings({"unused", "ResultOfMethodCallIgnored", "CallToPrintStackTrace"})
-public abstract class YamlManager<T> implements FileData<T>, ReloadableData
+public abstract class YamlManager<T extends X, X> implements FileData<T>, ReloadableData
 {
     protected final File folder;
     protected final String folderName;
@@ -60,6 +60,11 @@ public abstract class YamlManager<T> implements FileData<T>, ReloadableData
             file.delete();
         }
     }
+
+    /**
+     * Copy section of default file to new file.
+     */
+    public abstract void copySection(X source, X destination, String path);
 
     /**
      * Retrieve file object from file name.

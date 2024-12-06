@@ -25,6 +25,9 @@ public abstract class HeavenItem
     protected String name;
     @Getter
     protected String displayName;
+    @Getter
+    protected final List<String> defaultLore;
+    @Getter
     protected NamespacedKey key;
     @Getter
     protected int customModelData;
@@ -43,6 +46,7 @@ public abstract class HeavenItem
 
         this.setDisplayName(displayName);
         this.setItemLore(lore);
+        this.defaultLore = lore;
 
         //NBT
         setNBT(this.key, this.name);
