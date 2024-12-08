@@ -31,7 +31,7 @@ public class VelocityCommand extends SimpleVelocityCommand
     protected void registerSubCommands()
     {
         Stream.of(this.getClass().getDeclaredClasses())
-                .filter(VelocitySubCommand.class::isAssignableFrom) // Check if subclass of PaperSubCommand
+                .filter(VelocitySubCommand.class::isAssignableFrom)
                 .forEachOrdered((clazz) ->
                 {
                     try
@@ -145,7 +145,7 @@ public class VelocityCommand extends SimpleVelocityCommand
      */
     protected void addSubCommand(VelocitySubCommand subCommand)
     {
-        subCommands.put(subCommand.getName(), subCommand);
+        subCommands.putFirst(subCommand.getName(), subCommand);
     }
 
     /**

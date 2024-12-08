@@ -1,14 +1,13 @@
 package com.github.rfsmassacre.heavenlibrary.paper.commands;
 
 import com.github.rfsmassacre.heavenlibrary.paper.HeavenPaperPlugin;
-import com.github.rfsmassacre.heavenlibrary.velocity.commands.VelocityCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 /**
@@ -30,8 +29,8 @@ public abstract class PaperCommand extends SimplePaperCommand
     protected void registerSubCommands()
     {
         Stream.of(this.getClass().getDeclaredClasses())
-                .filter(PaperSubCommand.class::isAssignableFrom) // Check if subclass of PaperSubCommand
-                .forEachOrdered((clazz) ->
+                .filter(PaperSubCommand.class::isAssignableFrom)
+                .forEachOrdered(clazz ->
                 {
                     try
                     {
@@ -65,7 +64,7 @@ public abstract class PaperCommand extends SimplePaperCommand
         else if (args.length == 0)
         {
             //If no arguments are given, always run the first sub-command.
-            subCommands.values().iterator().next().execute(sender, args);
+            subCommands.sequencedValues().getFirst().execute(sender, args);
             return;
         }
         else
@@ -103,7 +102,7 @@ public abstract class PaperCommand extends SimplePaperCommand
         {
             //All subcommand names should be showed when typing the command in.
             List<String> suggestions = new ArrayList<>();
-            for (String subName : subCommands.keySet())
+            for (String subName : subCommands.sequencedKeySet())
             {
                 HeavenSubCommand subCommand = subCommands.get(subName);
                 if (subName.toLowerCase().startsWith(args[args.length - 1].toLowerCase()) &&
@@ -118,7 +117,7 @@ public abstract class PaperCommand extends SimplePaperCommand
         {
             //This section should show the argument of each subcommand
             List<String> suggestions = new ArrayList<>();
-            for (HeavenSubCommand subCommand : subCommands.values())
+            for (HeavenSubCommand subCommand : subCommands.sequencedValues())
             {
                 if (subCommand.getName().equalsIgnoreCase(args[0]))
                 {
@@ -147,7 +146,7 @@ public abstract class PaperCommand extends SimplePaperCommand
      */
     protected void addSubCommand(PaperSubCommand subCommand)
     {
-        subCommands.put(subCommand.getName(), subCommand);
+        subCommands.putFirst(subCommand.getName(), subCommand);
     }
 
     /**
