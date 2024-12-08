@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.velocity;
 import com.github.rfsmassacre.heavenlibrary.databases.MySQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.databases.SQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityConfiguration;
+import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityLocale;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -40,6 +41,7 @@ public final class HeavenLibraryVelocity extends HeavenVelocityPlugin
         File dataFolder = dataDirectory.toFile();
         dataFolder.mkdir();
         addYamlManager(new VelocityConfiguration(this, "", "config.yml", true));
+        addYamlManager(new VelocityLocale(this, "", "locale.yml", true));
         File driverFolder = new File(dataFolder + File.separator + "drivers");
         driverFolder.mkdir();
         if (driverEnabled("mysql"))

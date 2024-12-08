@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.paper;
 import com.github.rfsmassacre.heavenlibrary.databases.MySQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.databases.SQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperConfiguration;
+import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperLocale;
 import com.github.rfsmassacre.heavenlibrary.paper.menu.Menu;
 import lombok.Getter;
 
@@ -23,6 +24,7 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
         File dataFolder = getDataFolder();
         dataFolder.mkdir();
         addYamlManager(new PaperConfiguration(this, "", "config.yml", true));
+        addYamlManager(new PaperLocale(this, "", "locale.yml", true));
         File driverFolder = new File(dataFolder + File.separator + "drivers");
         driverFolder.mkdir();
         if (driverEnabled("mysql"))

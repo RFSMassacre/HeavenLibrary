@@ -1,0 +1,8 @@
+################################################################
+###                      HeavenLibrary                       ###
+################################################################
+
+invalid:
+  no-perm: "&cYou don't have permission for this."
+  console: "&cOnly players can run this command!"
+  command: "&7Invalid arguments. Use &c/{command}&7."
