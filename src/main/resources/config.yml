@@ -1,6 +1,26 @@
-### DRIVER FEATURES ##
+# Sound played when running a command.
+command-sound:
+  no-perm:
+    sound: BLOCK_ANVIL_FALL
+    volume: 0.5
+    pitch: 2.0
+  invalid-args:
+    sound: BLOCK_ANVIL_FALL
+    volume: 0.5
+    pitch: 2.0
+  invalid-sub-args:
+    sound: BLOCK_ANVIL_FALL
+    volume: 0.5
+    pitch: 2.0
+  success:
+    sound: ENTITY_PLAYER_LEVELUP
+    volume: 1.0
+    pitch: 0.75
+  incomplete:
+    sound: BLOCK_ANVIL_FALL
+    volume: 0.5
+    pitch: 2.0
+
 #If enabled, it will download the driver and load them on HeavenLibrary's start up.
 drivers:
   mysql: true
-  sqlite: false
-  h2: false

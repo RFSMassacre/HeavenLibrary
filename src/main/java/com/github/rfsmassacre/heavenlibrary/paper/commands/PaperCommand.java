@@ -1,11 +1,15 @@
 package com.github.rfsmassacre.heavenlibrary.paper.commands;
 
 import com.github.rfsmassacre.heavenlibrary.paper.HeavenPaperPlugin;
+import com.github.rfsmassacre.heavenlibrary.velocity.commands.VelocityCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Easier way to set up commands for Spigot Plugins.
@@ -20,6 +24,27 @@ public abstract class PaperCommand extends SimplePaperCommand
         super(plugin, commandName);
 
         this.subCommands = new LinkedHashMap<>();
+        registerSubCommands();
+    }
+
+    protected void registerSubCommands()
+    {
+        Stream.of(this.getClass().getDeclaredClasses())
+                .filter(PaperSubCommand.class::isAssignableFrom) // Check if subclass of PaperSubCommand
+                .forEachOrdered((clazz) ->
+                {
+                    try
+                    {
+                        Constructor<?> constructor = clazz.getDeclaredConstructor(this.getClass());
+                        constructor.setAccessible(true);
+                        PaperSubCommand subCommand = (PaperSubCommand) constructor.newInstance(this);
+                        addSubCommand(subCommand);
+                    }
+                    catch (Exception exception)
+                    {
+                        //Do nothing.
+                    }
+                });
     }
 
     /**
@@ -28,6 +53,7 @@ public abstract class PaperCommand extends SimplePaperCommand
      * @param sender CommandSender.
      * @param args Arguments given by sender.
      */
+    @Override
     public void onRun(@NotNull CommandSender sender, String... args)
     {
         if (subCommands.isEmpty())
@@ -165,20 +191,5 @@ public abstract class PaperCommand extends SimplePaperCommand
                 onFail(sender);
             }
         }
-
-        /**
-         * When the command is run.
-         * @param sender CommandSender.
-         * @param args Array of arguments.
-         */
-        protected abstract void onRun(CommandSender sender, String[] args);
-
-        /**
-         * List of suggestions
-         * @param sender CommandSender.
-         * @param args Array of arguments.
-         * @return List of suggestions.
-         */
-        public abstract List<String> onTabComplete(CommandSender sender, String[] args);
     }
 }

@@ -1,12 +1,16 @@
 package com.github.rfsmassacre.heavenlibrary.velocity.commands;
 
+import com.github.rfsmassacre.heavenlibrary.paper.commands.PaperCommand;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import com.velocitypowered.api.command.CommandSource;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Easier way to set up commands for Spigot Plugins.
@@ -21,6 +25,27 @@ public class VelocityCommand extends SimpleVelocityCommand
         super(plugin, commandName);
 
         this.subCommands = new LinkedHashMap<>();
+        registerSubCommands();
+    }
+
+    protected void registerSubCommands()
+    {
+        Stream.of(this.getClass().getDeclaredClasses())
+                .filter(VelocitySubCommand.class::isAssignableFrom) // Check if subclass of PaperSubCommand
+                .forEachOrdered((clazz) ->
+                {
+                    try
+                    {
+                        Constructor<?> constructor = clazz.getDeclaredConstructor(this.getClass());
+                        constructor.setAccessible(true);
+                        VelocitySubCommand subCommand = (VelocitySubCommand) constructor.newInstance(this);
+                        addSubCommand(subCommand);
+                    }
+                    catch (Exception exception)
+                    {
+                        //Do nothing.
+                    }
+                });
     }
 
     /**
