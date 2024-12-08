@@ -5,7 +5,12 @@ public interface ReloadableData
     /**
      * Provide easy function to reload configuration without needing parameters.
      */
-    void reload();
+    void reload(boolean update);
+
+    default void reload()
+    {
+        reload(false);
+    }
 
     /**
      * Provide an easy function to transfer new values from the default file to the new one without

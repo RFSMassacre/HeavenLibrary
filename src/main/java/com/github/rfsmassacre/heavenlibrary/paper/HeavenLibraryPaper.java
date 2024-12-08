@@ -22,7 +22,7 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
         instance = this;
         File dataFolder = getDataFolder();
         dataFolder.mkdir();
-        this.configuration = new PaperConfiguration(this, "", "config.yml");
+        addYamlManager(new PaperConfiguration(this, "", "config.yml", true));
         File driverFolder = new File(dataFolder + File.separator + "drivers");
         driverFolder.mkdir();
         if (driverEnabled("mysql"))
@@ -36,6 +36,6 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
 
     private boolean driverEnabled(String sqlType)
     {
-        return configuration.getBoolean("drivers." + sqlType);
+        return getConfiguration().getBoolean("drivers." + sqlType);
     }
 }

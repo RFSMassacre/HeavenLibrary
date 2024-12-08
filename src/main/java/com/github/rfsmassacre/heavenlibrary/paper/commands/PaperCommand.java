@@ -26,26 +26,21 @@ public abstract class PaperCommand extends SimplePaperCommand
      * When the sender runs a command.
      *
      * @param sender CommandSender.
-     * @param command Command given by plugin.yml file.
-     * @param label Label given by plugin.
      * @param args Arguments given by sender.
-     * @return Boolean: Whether it succeeded or failed.
      */
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
-                             String[] args)
+    public void onRun(@NotNull CommandSender sender, String... args)
     {
         if (subCommands.isEmpty())
         {
             //All commands MUST have a main sub-command.
             //If you want a command with no arguments, set the name to a blank string.
-            return false;
+            return;
         }
         else if (args.length == 0)
         {
             //If no arguments are given, always run the first sub-command.
             subCommands.values().iterator().next().execute(sender, args);
-            return true;
+            return;
         }
         else
         {
@@ -55,12 +50,11 @@ public abstract class PaperCommand extends SimplePaperCommand
             if (subCommands.containsKey(argument))
             {
                 subCommands.get(argument).execute(sender, args);
-                return true;
+                return;
             }
         }
 
         onInvalidArgs(sender);
-        return true;
     }
 
     /**

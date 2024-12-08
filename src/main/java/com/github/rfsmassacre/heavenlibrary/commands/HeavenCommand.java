@@ -4,13 +4,17 @@ import com.github.rfsmassacre.heavenlibrary.interfaces.ConfigurationData;
 import com.github.rfsmassacre.heavenlibrary.interfaces.LocaleData;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings({"unused", "rawuse"})
+@Getter
 public abstract class HeavenCommand<T>
 {
     protected final String pluginName;
     protected final String commandName;
+    protected final String permission;
     protected final ConfigurationData<?> config;
     protected final LocaleData<T, ?> locale;
 
@@ -18,70 +22,81 @@ public abstract class HeavenCommand<T>
     {
         this.pluginName = pluginName;
         this.commandName = commandName;
+        this.permission = pluginName + "." + commandName;
         this.config = config;
         this.locale = locale;
     }
 
-    public String getPermission()
+    protected boolean hasPermission(T sender)
     {
-        return pluginName + "." + commandName;
+        return hasPermission(sender, permission);
     }
 
-    /**
-     * Broken down commands within a larger command in order to make running commands easier.
-     * Simply implement each subCommand, add them to the map, and it will run for you.
-     */
+    protected abstract boolean hasPermission(T sender, String permission);
+
+    protected abstract void onRun(T sender, String... args);
+
+    protected void onFail(T sender)
+    {
+        this.locale.sendLocale(sender, "invalid.no-perm");
+    }
+
+    protected void onConsole(T sender)
+    {
+        this.locale.sendLocale(sender, "invalid.console");
+    }
+
+    protected void onInvalidArgs(T sender, String ... args)
+    {
+        this.locale.sendLocale(sender, "invalid.args", "{command}", commandName +
+                (args.length > 0 ? " " + String.join(" ", args) : ""));
+    }
+
+    protected List<String> onTabComplete(T sender, String[] args)
+    {
+        return Collections.emptyList();
+    }
+
     @Getter
     protected abstract class HeavenSubCommand
     {
         protected final String name;
         protected final String permission;
 
-        public HeavenSubCommand(String name, String permission)
-        {
-            this.name =  name;
+        public HeavenSubCommand(String name, String permission) {
+            this.name = name;
             this.permission = permission;
         }
 
         public HeavenSubCommand(String name)
         {
-            this.name = name;
-            this.permission = (pluginName == null || pluginName.isEmpty() ? "" : pluginName + ".") + commandName +
-                    (name == null || name.isEmpty() ? "" : "." + name);
+            this(name, HeavenCommand.this.permission + (name == null || name.isEmpty() ? "" : "." + name));
         }
 
-        /**
-         * Execute onRun() or onFail() on permission.
-         * @param sender CommandSender.
-         * @param args Array of command arguments.
-         */
-        public abstract void execute(T sender, String[] args);
+        protected void execute(T sender, String[] args)
+        {
+            if (hasPermission(sender, permission))
+            {
+                this.onRun(sender, args);
+            }
+            else
+            {
+                HeavenCommand.this.onFail(sender);
+            }
+        }
 
-        /**
-         * When the command is run.
-         * @param sender CommandSender.
-         * @param args Array of arguments.
-         */
-        protected abstract void onRun(T sender, String[] args);
+        protected abstract void onRun(T sender, String ... args);
 
-        /**
-         * List of suggestions
-         * @param sender CommandSender.
-         * @param args Array of arguments.
-         * @return List of suggestions.
-         */
-        public abstract List<String> onTabComplete(T sender, String[] args);
+        protected void onInvalidArgs(T sender, String ... args)
+        {
+            List<String> allArgs = new ArrayList<>(List.of(args));
+            allArgs.addFirst(this.name);
+            HeavenCommand.this.onInvalidArgs(sender, allArgs.toArray(new String[0]));
+        }
+
+        public List<String> onTabComplete(T sender, String[] args)
+        {
+            return Collections.emptyList();
+        }
     }
-
-    /**
-     * When the command fails.
-     * @param sender CommandSender.
-     */
-    protected abstract void onFail(T sender);
-
-    /**
-     * When the command does not meet the argument requirements.
-     * @param sender CommandSender.
-     */
-    protected abstract void onInvalidArgs(T sender);
 }

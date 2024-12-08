@@ -6,6 +6,14 @@ import java.util.function.Consumer;
 
 public interface FileData<T>
 {
+    class ResourceNotFoundException extends Exception
+    {
+        public ResourceNotFoundException(String pluginName, String fileName)
+        {
+            super("Cannot find " + fileName + " in resource folder of plugin " + pluginName + "!");
+        }
+    }
+
     /**
      * Read from file and convert into whatever data or object needed.
      *
@@ -18,7 +26,7 @@ public interface FileData<T>
      *
      * @return Data or object read from inside the jar.
      */
-    T readDefault();
+    T readDefault() throws ResourceNotFoundException;
 
     void readAsync(Consumer<T> callback);
 

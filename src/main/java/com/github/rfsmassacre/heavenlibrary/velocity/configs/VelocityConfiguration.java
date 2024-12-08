@@ -1,10 +1,12 @@
 package com.github.rfsmassacre.heavenlibrary.velocity.configs;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.ConfigurationData;
+import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
+import com.github.rfsmassacre.heavenlibrary.velocity.HeavenLibraryVelocity;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import com.github.rfsmassacre.heavenlibrary.velocity.managers.VelocityYamlManager;
-import com.velocitypowered.api.plugin.Plugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.Set;
 /**
  * Handles retrieving all the values from a configuration file.
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings("all")
 public class VelocityConfiguration extends VelocityYamlManager implements ConfigurationData<CommentedConfigurationNode>
 {
 
@@ -23,11 +25,16 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
      *
      * @param fileName Name of file to handle.
      */
+    public VelocityConfiguration(HeavenVelocityPlugin plugin, String folderName, String fileName, boolean update)
+    {
+        super(plugin, folderName, fileName, update);
+    }
+
     public VelocityConfiguration(HeavenVelocityPlugin plugin, String folderName, String fileName)
     {
         super(plugin, folderName, fileName);
     }
-    
+
     /**
      * Provide easy function to reload configuration without needing parameters.
      */
@@ -35,6 +42,77 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     public void reload()
     {
         this.yaml = read();
+    }
+
+    @Override
+    public <T> T get(String key, Class<T> clazz) {
+
+        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
+        {
+            try
+            {
+                T t = this.yaml.node(splitKeys(key)).get(clazz, this.defaultYaml.node(splitKeys(key)).get(clazz));
+                if (t != null)
+                {
+                    return t;
+                }
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
+        if (library != null)
+        {
+            try
+            {
+                return library.get(key, clazz);
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public <T> List<T> getList(String key, Class<T> clazz)
+    {
+        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
+        {
+            try
+            {
+                List<T> list = this.yaml.node(splitKeys(key)).getList(clazz,
+                        this.defaultYaml.node(splitKeys(key)).getList(clazz));
+                if (list != null)
+                {
+                    return list;
+                }
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
+        if (library != null)
+        {
+            try
+            {
+                return library.getList(key, clazz);
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -228,5 +306,23 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     public CommentedConfigurationNode getSection(String key)
     {
         return Objects.requireNonNullElse(yaml.node(key), defaultYaml.node(key));
+    }
+
+    @Override
+    protected <F extends YamlManager<CommentedConfigurationNode, ConfigurationNode>> F getLibraryYaml(Class<F> clazz)
+    {
+        return null;
+    }
+
+    @Override
+    protected boolean hasKey(String key)
+    {
+        return false;
+    }
+
+    @Override
+    protected boolean hasList(String key)
+    {
+        return false;
     }
 }

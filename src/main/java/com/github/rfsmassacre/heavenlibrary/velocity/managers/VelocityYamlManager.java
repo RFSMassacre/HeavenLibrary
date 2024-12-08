@@ -1,13 +1,15 @@
 package com.github.rfsmassacre.heavenlibrary.velocity.managers;
 
 import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
+import com.github.rfsmassacre.heavenlibrary.velocity.HeavenLibraryVelocity;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
 import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
@@ -15,14 +17,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 /**
  * Spigot sided manager for YML files.
  */
-@SuppressWarnings({"unused", "CallToPrintStackTrace"})
+@SuppressWarnings("all")
 public abstract class VelocityYamlManager extends YamlManager<CommentedConfigurationNode, ConfigurationNode>
 {
     protected final HeavenVelocityPlugin plugin;
+    private final YamlConfigurationLoader defaultLoader;
     private final YamlConfigurationLoader loader;
 
     /**
@@ -33,16 +37,59 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
      */
     public VelocityYamlManager(HeavenVelocityPlugin plugin, String folderName, String fileName)
     {
+        this(plugin, folderName, fileName, false);
+    }
+
+    public VelocityYamlManager(HeavenVelocityPlugin plugin, String folderName, String fileName, boolean update)
+    {
         super(plugin.getDataDirectory().toFile(), folderName, fileName);
 
         this.plugin = plugin;
-        this.loader = YamlConfigurationLoader.builder().file(getFile()).build();
-        copy(false);
+        URL url = plugin.getClass().getResource(File.separator + fileName);
+        this.defaultLoader = YamlConfigurationLoader.builder()
+                .nodeStyle(NodeStyle.BLOCK)
+                .defaultOptions(ConfigurationOptions.defaults())
+                .url(url)
+                .build();
+        this.loader = YamlConfigurationLoader.builder()
+                .nodeStyle(NodeStyle.BLOCK)
+                .defaultOptions(ConfigurationOptions.defaults())
+                .file(getFile())
+                .build();
+        reload(update);
     }
 
     protected String[] splitKeys(String key)
     {
-        return key.split("\\.");
+        return key.split(Pattern.quote("."));
+    }
+
+    @Override
+    protected <F extends YamlManager<CommentedConfigurationNode, ConfigurationNode>> F getLibraryYaml(Class<F> clazz)
+    {
+        return HeavenLibraryVelocity.getInstance().getYamlManager(fileName, clazz);
+    }
+
+    @Override
+    protected boolean hasKey(String key)
+    {
+        if (this.yaml.node(splitKeys(key)).virtual())
+        {
+            return this.defaultYaml.node(splitKeys(key)).virtual();
+        }
+
+        return false;
+    }
+
+    @Override
+    protected boolean hasList(String key)
+    {
+        if (!this.yaml.node(splitKeys(key)).isList())
+        {
+            return this.defaultYaml.node(splitKeys(key)).isList();
+        }
+
+        return true;
     }
 
     /**

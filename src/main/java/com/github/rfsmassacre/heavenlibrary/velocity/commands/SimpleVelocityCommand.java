@@ -5,6 +5,9 @@ import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public abstract class SimpleVelocityCommand extends HeavenCommand<CommandSource> implements SimpleCommand
 {
     protected SimpleVelocityCommand(HeavenVelocityPlugin plugin, String commandName)
@@ -12,23 +15,34 @@ public abstract class SimpleVelocityCommand extends HeavenCommand<CommandSource>
         super(plugin.getConfiguration(), plugin.getLocale(), plugin.getId(), commandName);
     }
 
-    /**
-     * When the command fails.
-     * @param sender CommandSender.
-     */
+    protected abstract void onRun(CommandSource sender, String ... args);
+
     @Override
-    protected void onFail(CommandSource sender)
+    public void execute(Invocation invocation)
     {
-        locale.sendLocale(sender, "invalid.no-perm");
+        if (hasPermission(invocation))
+        {
+            onRun(invocation.source(), invocation.arguments());
+        }
+        else
+        {
+            onFail(invocation.source());
+        }
     }
 
-    /**
-     * When the command does not meet the argument requirements.
-     * @param sender CommandSender.
-     */
-    @Override
-    protected void onInvalidArgs(CommandSource sender)
+    public List<String> suggest(SimpleCommand.Invocation invocation)
     {
-        locale.sendLocale(sender, "invalid.command", "{command}", commandName);
+        return this.onTabComplete(invocation.source(), invocation.arguments());
+    }
+
+    public CompletableFuture<List<String>> suggestAsync(SimpleCommand.Invocation invocation)
+    {
+        return CompletableFuture.completedFuture(suggest(invocation));
+    }
+
+    @Override
+    protected boolean hasPermission(CommandSource sender, String permission)
+    {
+        return sender.hasPermission(permission);
     }
 }

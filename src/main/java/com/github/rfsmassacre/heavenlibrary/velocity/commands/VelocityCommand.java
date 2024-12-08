@@ -26,10 +26,11 @@ public class VelocityCommand extends SimpleVelocityCommand
     /**
      * When the sender runs a command.
      *
-     * @param invocation Invocation.
+     * @param sender CommandSender.
+     * @param args Arguments.
      */
     @Override
-    public void execute(Invocation invocation)
+    public void onRun(CommandSource sender, String... args)
     {
         if (subCommands.isEmpty())
         {
@@ -37,25 +38,25 @@ public class VelocityCommand extends SimpleVelocityCommand
             //If you want a command with no arguments, set the name to a blank string.
             return;
         }
-        else if (invocation.arguments().length == 0)
+        else if (args.length == 0)
         {
             //If no arguments are given, always run the first sub-command.
-            subCommands.values().iterator().next().execute(invocation.source(), invocation.arguments());
+            subCommands.values().iterator().next().execute(sender, args);
             return;
         }
         else
         {
             //If arguments are given, cycle through the right one.
             //If none found, it'll give an error defined.
-            String argument = invocation.arguments()[0].toLowerCase();
+            String argument = args[0].toLowerCase();
             if (subCommands.containsKey(argument))
             {
-                subCommands.get(argument).execute(invocation.source(), invocation.arguments());
+                subCommands.get(argument).execute(sender, args);
                 return;
             }
         }
 
-        onInvalidArgs(invocation.source());
+        onInvalidArgs(sender);
     }
 
     /**

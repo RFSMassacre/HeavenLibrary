@@ -5,6 +5,10 @@ import java.util.Set;
 
 public interface ConfigurationData<T> extends ReloadableData
 {
+    public <X> X get(String key, Class<X> clazz);
+
+    public <X> List<X> getList(String key, Class<X> clazz);
+
     /**
      * Retrieves String value from configuration.
      * @param key Key that the value is assigned to.

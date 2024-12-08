@@ -24,11 +24,15 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
      * @param plugin JavaPlugin handling the localization.
      * @param fileName Name of file to handle.
      */
+    public PaperLocale(JavaPlugin plugin, String folderName, String fileName, boolean update)
+    {
+        super(plugin, folderName, fileName, update);
+    }
+
     public PaperLocale(JavaPlugin plugin, String folderName, String fileName)
     {
         super(plugin, folderName, fileName);
     }
-
     /**
      * Retrieve message from given key.
      * @param key Specified message assigned to.
@@ -39,17 +43,26 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
     @Override
     public String getMessage(String key, boolean usePrefix)
     {
-        String prefix = yaml.getString("prefix", defaultYaml.getString("prefix"));
+
+        String prefix = this.yaml.getString("prefix", defaultYaml.getString("prefix"));
         if (key == null || key.isBlank())
         {
             return usePrefix ? prefix : "";
         }
 
-        String message = yaml.getString(key, defaultYaml.getString(key));
+        String message = this.yaml.getString(key, defaultYaml.getString(key));
+        if (message == null)
+        {
+            PaperLocale library = getLibraryYaml(PaperLocale.class);
+            if (library != null)
+            {
+                message = library.getMessage(key, false);
+            }
+        }
+
         if (message == null || message.isBlank())
         {
-            prefix = "";
-            message = "";
+            return null;
         }
 
         return usePrefix ? prefix + message : message;

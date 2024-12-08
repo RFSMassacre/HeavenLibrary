@@ -1,6 +1,8 @@
 package com.github.rfsmassacre.heavenlibrary.velocity.configs;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.LocaleData;
+import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
+import com.github.rfsmassacre.heavenlibrary.velocity.HeavenLibraryVelocity;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
 import com.github.rfsmassacre.heavenlibrary.velocity.managers.VelocityYamlManager;
 import com.velocitypowered.api.command.CommandSource;
@@ -9,6 +11,8 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationNode;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,8 +25,14 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
 {
     /**
      * JavaPlugin and name of file will give back a fully updated YamlConfiguration.
+     *
      * @param fileName Name of file to handle.
      */
+    public VelocityLocale(HeavenVelocityPlugin plugin, String folderName, String fileName, boolean update)
+    {
+        super(plugin, folderName, fileName, update);
+    }
+
     public VelocityLocale(HeavenVelocityPlugin plugin, String folderName, String fileName)
     {
         super(plugin, folderName, fileName);
@@ -38,7 +48,8 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
 
     /**
      * Retrieve message from given key.
-     * @param key Specified message assigned to.
+     *
+     * @param key       Specified message assigned to.
      * @param usePrefix Use prefix with message.
      * @return Message in locale file from the key.
      */
@@ -73,12 +84,13 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
 
     /**
      * Send formatted string to receiver.
+     *
      * @param receiver Player or console receiving message.
-     * @param message Message to be sent.
-     * @param holders Words to be replaced with values.
+     * @param message  Message to be sent.
+     * @param holders  Words to be replaced with values.
      */
     @Override
-    public void sendMessage(CommandSource receiver, boolean usePrefix, String message, String...holders)
+    public void sendMessage(CommandSource receiver, boolean usePrefix, String message, String... holders)
     {
         if (receiver == null)
         {
@@ -112,22 +124,24 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
 
     /**
      * Send formatted string to receiver.
+     *
      * @param receiver Player or console receiving message.
-     * @param message Message to be sent.
-     * @param holders Words to be replaced with values.
+     * @param message  Message to be sent.
+     * @param holders  Words to be replaced with values.
      */
     @Override
-    public void sendMessage(CommandSource receiver, String message, String...holders)
+    public void sendMessage(CommandSource receiver, String message, String... holders)
     {
         sendMessage(receiver, false, message, holders);
     }
 
     /**
      * Send formatted locale message to receiver.
-     * @param receiver Player or console receiving message.
-     * @param key Specified message assigned to.
+     *
+     * @param receiver  Player or console receiving message.
+     * @param key       Specified message assigned to.
      * @param usePrefix Use prefix with message.
-     * @param holders Words to be replaced with values.
+     * @param holders   Words to be replaced with values.
      */
     @Override
     public void sendLocale(CommandSource receiver, boolean usePrefix, String key, String... holders)
@@ -137,25 +151,27 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
 
     /**
      * Send formatted locale message to receiver.
+     *
      * @param receiver Player or console receiving message.
-     * @param key Specified message assigned to.
-     * @param holders Words to be replaced with values.
+     * @param key      Specified message assigned to.
+     * @param holders  Words to be replaced with values.
      */
     @Override
-    public void sendLocale(CommandSource receiver, String key, String...holders)
+    public void sendLocale(CommandSource receiver, String key, String... holders)
     {
         sendMessage(receiver, getMessage(key, true), holders);
     }
 
     /**
      * Format string with colors, bolds, italics, underlines, or magic characters if enabled.
-     * @param string String to format.
-     * @param color Color.
-     * @param bold Bold.
-     * @param italic Italic.
-     * @param underline Underline.
+     *
+     * @param string        String to format.
+     * @param color         Color.
+     * @param bold          Bold.
+     * @param italic        Italic.
+     * @param underline     Underline.
      * @param strikethrough Strikethrough.
-     * @param magic Magic.
+     * @param magic         Magic.
      * @return Formatted string with only enabled parts.
      */
     public static String format(String string, boolean color, boolean bold, boolean italic, boolean underline,
@@ -203,7 +219,7 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
                 string = string.replace(matcher.group(), "" + hexColor);
             }
         }
-        
+
         TextComponent component = Component.text(string);
         return LegacyComponentSerializer.legacySection().serialize(component);
     }

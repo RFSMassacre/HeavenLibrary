@@ -1,6 +1,7 @@
 package com.github.rfsmassacre.heavenlibrary.paper.managers;
 
 import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
+import com.github.rfsmassacre.heavenlibrary.paper.HeavenLibraryPaper;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,10 +30,43 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
      */
     public PaperYamlManager(JavaPlugin plugin, String folderName, String fileName)
     {
+        this(plugin, folderName, fileName, false);
+    }
+
+    public PaperYamlManager(JavaPlugin plugin, String folderName, String fileName, boolean update)
+    {
         super(plugin.getDataFolder(), folderName, fileName);
 
         this.plugin = plugin;
-        copy(false);
+        reload(update);
+    }
+
+    @Override
+    protected <F extends YamlManager<FileConfiguration, ConfigurationSection>> F getLibraryYaml(Class<F> clazz)
+    {
+        return HeavenLibraryPaper.getInstance().getYamlManager(fileName, clazz);
+    }
+
+    @Override
+    protected boolean hasKey(String key)
+    {
+        if (!yaml.contains(key))
+        {
+            return (defaultYaml).contains(key);
+        }
+
+        return true;
+    }
+
+    @Override
+    protected boolean hasList(String key)
+    {
+        if (!yaml.isList(key))
+        {
+            return defaultYaml.isList(key);
+        }
+
+        return true;
     }
 
     /**
@@ -64,7 +98,7 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
         if (stream != null)
         {
             InputStreamReader reader = new InputStreamReader(stream);
-            this.defaultYaml = YamlConfiguration.loadConfiguration(reader);
+            return YamlConfiguration.loadConfiguration(reader);
         }
 
         return null;

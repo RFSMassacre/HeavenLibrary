@@ -2,16 +2,18 @@ package com.github.rfsmassacre.heavenlibrary.managers;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.FileData;
 import com.github.rfsmassacre.heavenlibrary.interfaces.ReloadableData;
+import lombok.Getter;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
-@SuppressWarnings({"unused", "ResultOfMethodCallIgnored", "CallToPrintStackTrace"})
+@SuppressWarnings({"unused", "ResultOfMethodCallIgnored"})
 public abstract class YamlManager<T extends X, X> implements FileData<T>, ReloadableData
 {
     protected final File folder;
     protected final String folderName;
+    @Getter
     protected final String fileName;
     protected T defaultYaml;
     protected T yaml;
@@ -24,48 +26,70 @@ public abstract class YamlManager<T extends X, X> implements FileData<T>, Reload
     public YamlManager(File dataFolder, String folderName, String fileName)
     {
         this.folderName = folderName;
+        this.fileName = fileName;
         this.folder = new File(dataFolder + File.separator + folderName);
         if (!folder.exists())
         {
             folder.mkdirs();
         }
-
-        this.fileName = fileName;
-        this.defaultYaml = readDefault();
-
-        reload();
     }
+
+    protected abstract <F extends YamlManager<T, X>> F getLibraryYaml(Class<F> clazz);
+
+    protected abstract boolean hasKey(String key);
+
+    protected abstract boolean hasList(String key);
 
     /**
      * Provide easy function to reload configuration without needing parameters.
      */
     @Override
-    public void reload()
+    public void reload(boolean update)
     {
-        this.yaml = read();
+        if (this.defaultYaml == null)
+        {
+            try
+            {
+                this.defaultYaml = this.readDefault();
+            }
+            catch (FileData.ResourceNotFoundException exception)
+            {
+                exception.printStackTrace();
+            }
+        }
+
+        if (!getFile().exists())
+        {
+            this.write(defaultYaml);
+        }
+        else if (update)
+        {
+            this.copy(false);
+        }
+
+        this.yaml = this.read();
     }
 
     @Override
     public void copy(boolean overwrite)
     {
-        if (!getFile().exists())
+        if (defaultYaml == null)
+        {
+            return;
+        }
+
+        if (overwrite)
         {
             write(defaultYaml);
         }
         else
         {
-            if (overwrite)
-            {
-                write(defaultYaml);
-            }
-            else
-            {
-                reload();
-                update();
-                write(yaml);
-            }
+            this.yaml = read();
+            this.update();
+            this.write(yaml);
         }
     }
+
 
     /**
      * Delete specified file.
