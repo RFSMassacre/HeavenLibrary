@@ -7,6 +7,22 @@ You can quickly download an artifact from a commit if you don't know how to comp
 ## Contributing
 I'm always looking for others to add more features or implementations to other Minecraft Java server platforms. Pull requests and forks are welcome!
 
+## Maven
+Add this your pom.xml file and it should import to your project.
+```POM
+<repository>
+    <id>heavenreborn</id>
+    <url>https://maven.heavenreborn.com/snapshots</url>
+</repository>
+
+<dependency>
+    <groupId>com.github.rfsmassacre</groupId>
+    <artifactId>HeavenLibrary</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+```
+
 ## Usage
 Everything is aimed to be as easy to extend for any platform. Right now the only platforms available are **Paper** and **Velocity**. I dropped support for **Bungeecord** and **Waterfall** since they are deprecated.
 
