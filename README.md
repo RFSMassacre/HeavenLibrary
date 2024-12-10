@@ -4,6 +4,9 @@ HeavenLibrary is a Minecraft Java server plugin library that aims to make it sim
 ## Pre-release Artifacts
 You can quickly download an artifact from a commit if you don't know how to compile the source code. Check it out [here](https://github.com/RFSMassacre/HeavenLibrary/actions/workflows/maven-publish.yml?query=branch%3Amaster+is%3Asuccess)!
 
+## JavaDocs
+Java Documentation can be found [here](https://maven.heavenreborn.com/javadoc/snapshots/com/github/rfsmassacre/HeavenLibrary/1.0-SNAPSHOT).
+
 ## Contributing
 I'm always looking for others to add more features or implementations to other Minecraft Java server platforms. Pull requests and forks are welcome!
 
@@ -53,13 +56,22 @@ public class ExampleSimpleCommand extends SimplePaperCommand
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args)
+    public boolean onRun(@NotNull CommandSender sender, @NotNull String... args)
     {
         //Do something.
     }
 
+    /**
+     * This is optional to implement. If you want auto-complete, use this 
+     * 
+     * @param sender Sender.
+     * @param command Command.
+     * @param label Label.
+     * @param args Arguments.
+     * @return List of suggestions.
+     */
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args)
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String... args)
     {
         //Make sure to actually give the auto-completed arguments you need.
         return Collections.emptyList();
@@ -67,6 +79,7 @@ public class ExampleSimpleCommand extends SimplePaperCommand
 }
 ```
 - **Velocity**
+
 ```Java
 public class ExampleSimpleCommand extends SimpleVelocityCommand
 {
@@ -76,15 +89,20 @@ public class ExampleSimpleCommand extends SimpleVelocityCommand
     }
 
     @Override
-    public void execute(Invocation invocation)
+    public boolean onRun(@NotNull CommandSource sender, @NotNull String... args)
     {
-        CommandSource source = invocation.source();
-        String[] arguments = invocation.arguments();
         //Do something.
     }
 
+    /**
+     * This is optional to implement. If you want auto-complete, use this 
+     *
+     * @param sender Sender.
+     * @param args Arguments.
+     * @return List of suggestions.
+     */
     @Override
-    public List<String> suggest(Invocation invocation)
+    public @Nullable List<String> onTabComplete(@NotNull CommandSource sender, @NotNull String... args)
     {
         //Make sure to actually give the auto-completed arguments you need.
         return Collections.emptyList();
@@ -97,6 +115,7 @@ This expects you to make your plugin class's instance for the platform you need 
 If you need each argument to do a LOT of code, then extend from the Command of your platform. It extends SimpleCommand and implements some things already for you.
 
 It handles permissions already for you and will already execute the first SubCommand when no argument is given.
+This also autoload all the SubCommand classes within the Command classes in the order it's written, meaning the first SubCommand class inside in the class will be the first SubCommand found.
 - **Paper**
 ```Java
 public class ExampleCommand extends PaperCommand
@@ -104,8 +123,6 @@ public class ExampleCommand extends PaperCommand
     public ExampleCommand()
     {
         super(ExamplePlugin.getInstance(), "example");
-
-        addSubCommand(new ExampleSubCommand());
     }
     
     private class ExampleSubCommand extends PaperSubCommand
@@ -121,10 +138,16 @@ public class ExampleCommand extends PaperCommand
             //Do something.
         }
 
+        /**
+         * This is optional to implement. If you want auto-complete, use this 
+         *
+         * @param sender Sender.
+         * @param args Arguments.
+         * @return List of suggestions.
+         */
         @Override
-        public List<String> onTabComplete(CommandSender sender, String[] args)
+        public List<String> onTabComplete(CommandSender sender, String... args)
         {
-            //Make sure to actually give the auto-completed arguments you need.
             return Collections.emptyList();
         }
     }
@@ -136,9 +159,7 @@ public class ExampleCommand extends VelocityCommand
 {
     public ExampleCommand()
     {
-        super(HeavenChat.getInstance(), "example");
-
-        addSubCommand(new ExampleSubCommand());
+        super(ExamplePlugin.getInstance(), "example");
     }
     
     private class ExampleSubCommand extends VelocitySubCommand
@@ -154,6 +175,13 @@ public class ExampleCommand extends VelocityCommand
             //Do something.
         }
 
+        /**
+         * This is optional to implement. If you want auto-complete, use this 
+         *
+         * @param sender Sender.
+         * @param args Arguments.
+         * @return List of suggestions.
+         */
         @Override
         public List<String> onTabComplete(CommandSource sender, String[] args)
         {

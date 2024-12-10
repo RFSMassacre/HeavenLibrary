@@ -13,7 +13,7 @@ public class DividerIcon extends Icon
     }
     public DividerIcon(int x, int y, Material material)
     {
-        super(x, y, 1, false, material, material.toString(), new ArrayList<>());
+        super(x, y, 1, false, material,"", new ArrayList<>());
     }
 
     @Override

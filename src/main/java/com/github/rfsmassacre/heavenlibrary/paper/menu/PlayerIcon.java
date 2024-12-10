@@ -12,14 +12,30 @@ import java.util.ArrayList;
 
 public class PlayerIcon extends Icon
 {
+    private static String getDisplayName(OfflinePlayer target)
+    {
+        Player onlinePlayer = target.getPlayer();
+        if (onlinePlayer != null)
+        {
+            return onlinePlayer.getDisplayName();
+        }
+
+        return target.getName();
+    }
+
     protected OfflinePlayer target;
 
     public PlayerIcon(int x, int y, OfflinePlayer target)
     {
-        super(x, y, 1, false, Material.PLAYER_HEAD, "&f" + target.getName(),
+        super(x, y, 1, false, Material.PLAYER_HEAD, "&f" + getDisplayName(target),
                 new ArrayList<>());
 
         this.target = target;
+    }
+
+    public String getDisplayName()
+    {
+        return getDisplayName(target);
     }
 
     @Override
