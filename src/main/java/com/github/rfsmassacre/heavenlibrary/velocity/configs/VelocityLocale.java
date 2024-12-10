@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 /**
  * Handles retrieving all the values from a locale file.
  */
-@SuppressWarnings({"unused"})
+@SuppressWarnings("all")
 public class VelocityLocale extends VelocityYamlManager implements LocaleData<CommandSource, TextComponent>
 {
     /**
@@ -39,14 +39,6 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
     }
 
     /**
-     * Provide easy function to reload configuration without needing parameters.
-     */
-    public void reload()
-    {
-        this.yaml = read();
-    }
-
-    /**
      * Retrieve message from given key.
      *
      * @param key       Specified message assigned to.
@@ -62,21 +54,10 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
             prefix = defaultYaml.node("prefix").getString();
         }
 
-        if (key == null || key.isEmpty())
-        {
-            return usePrefix ? prefix : "";
-        }
-
-        String message = yaml.node(splitKeys(key)).getString();
-        if (message == null)
-        {
-            message = defaultYaml.node(splitKeys(key)).getString();
-        }
-
+        String message = get(key, String.class);
         if (message == null || message.isBlank())
         {
-            prefix = "";
-            message = "";
+            return null;
         }
 
         return usePrefix ? prefix + message : message;

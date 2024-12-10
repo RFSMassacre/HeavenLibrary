@@ -33,6 +33,7 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
     {
         super(plugin, folderName, fileName);
     }
+
     /**
      * Retrieve message from given key.
      * @param key Specified message assigned to.
@@ -43,23 +44,13 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
     @Override
     public String getMessage(String key, boolean usePrefix)
     {
-
         String prefix = this.yaml.getString("prefix", defaultYaml.getString("prefix"));
         if (key == null || key.isBlank())
         {
             return usePrefix ? prefix : "";
         }
 
-        String message = this.yaml.getString(key, defaultYaml.getString(key));
-        if (message == null)
-        {
-            PaperLocale library = getLibraryYaml(PaperLocale.class);
-            if (library != null)
-            {
-                message = library.getMessage(key, false);
-            }
-        }
-
+        String message = get(key, String.class);
         if (message == null || message.isBlank())
         {
             return null;

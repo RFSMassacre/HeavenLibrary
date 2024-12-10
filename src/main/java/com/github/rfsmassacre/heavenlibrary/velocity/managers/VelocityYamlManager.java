@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.velocity.managers;
 import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenLibraryVelocity;
 import com.github.rfsmassacre.heavenlibrary.velocity.HeavenVelocityPlugin;
+import com.github.rfsmassacre.heavenlibrary.velocity.configs.VelocityConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
@@ -15,6 +16,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -25,6 +27,11 @@ import java.util.regex.Pattern;
 @SuppressWarnings("all")
 public abstract class VelocityYamlManager extends YamlManager<CommentedConfigurationNode, ConfigurationNode>
 {
+    protected static String[] splitKeys(String key)
+    {
+        return key.split(Pattern.quote("."));
+    }
+
     protected final HeavenVelocityPlugin plugin;
     private final YamlConfigurationLoader defaultLoader;
     private final YamlConfigurationLoader loader;
@@ -59,11 +66,6 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
         reload(update);
     }
 
-    protected String[] splitKeys(String key)
-    {
-        return key.split(Pattern.quote("."));
-    }
-
     @Override
     protected <F extends YamlManager<CommentedConfigurationNode, ConfigurationNode>> F getLibraryYaml(Class<F> clazz)
     {
@@ -90,6 +92,80 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
         }
 
         return true;
+    }
+
+    @Override
+    protected <T> T get(String key, Class<T> clazz)
+    {
+        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
+        {
+            try
+            {
+                T t = this.yaml.node(splitKeys(key)).get(clazz);
+                if (t == null)
+                {
+                    t = this.defaultYaml.node(splitKeys(key)).get(clazz);
+                }
+
+                return t;
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
+        if (library != null)
+        {
+            try
+            {
+                return library.get(key, clazz);
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    protected <T> List<T> getList(String key, Class<T> clazz)
+    {
+        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
+        {
+            try
+            {
+                List<T> list = this.yaml.node(splitKeys(key)).getList(clazz);
+                if (list == null)
+                {
+                    list = this.defaultYaml.node(splitKeys(key)).getList(clazz);
+                }
+
+                return list;
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
+        if (library != null)
+        {
+            try
+            {
+                return library.getList(key, clazz);
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /**

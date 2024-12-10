@@ -7,6 +7,7 @@ import lombok.Getter;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @SuppressWarnings({"unused", "ResultOfMethodCallIgnored"})
 public abstract class YamlManager<T extends X, X> implements FileData<T>, ReloadableData
@@ -39,6 +40,10 @@ public abstract class YamlManager<T extends X, X> implements FileData<T>, Reload
     protected abstract boolean hasKey(String key);
 
     protected abstract boolean hasList(String key);
+
+    protected abstract  <V> V get(String key, Class<V> clazz);
+
+    protected abstract <V> List<V> getList(String key, Class<V> clazz);
 
     /**
      * Provide easy function to reload configuration without needing parameters.

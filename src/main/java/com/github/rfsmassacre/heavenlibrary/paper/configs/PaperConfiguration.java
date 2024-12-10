@@ -32,55 +32,6 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     }
 
     @Override
-    public <T> T get(String key, Class<T> clazz)
-    {
-        if (plugin instanceof HeavenLibraryPaper || this.hasKey(key))
-        {
-            return yaml.getObject(key, clazz, defaultYaml.getObject(key, clazz));
-        }
-
-        PaperConfiguration library = getLibraryYaml(PaperConfiguration.class);
-        if (library != null)
-        {
-            return library.get(key, clazz);
-        }
-
-        return null;
-    }
-
-    @Override
-    public <T> List<T> getList(String key, Class<T> clazz)
-    {
-        List<T> list = new ArrayList<>();
-        List<?> rawList = null;
-        if (plugin instanceof HeavenLibraryPaper || hasList(key))
-        {
-            rawList = yaml.getList(key, defaultYaml.getList(key));
-        }
-        else
-        {
-            PaperConfiguration library = this.getLibraryYaml(PaperConfiguration.class);
-            if (library != null)
-            {
-                rawList = library.getList(key, clazz);
-            }
-        }
-
-        if (rawList != null)
-        {
-            for (Object object : rawList)
-            {
-                if (clazz.isInstance(object))
-                {
-                    list.add(clazz.cast(object));
-                }
-            }
-        }
-
-        return list;
-    }
-
-    @Override
     public String getString(String key)
     {
         if (this.plugin instanceof HeavenLibraryPaper || this.hasKey(key))
@@ -100,7 +51,7 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     @Override
     public int getInt(String key)
     {
-        Integer value = this.get(key, Integer.class);
+        Integer value = get(key, Integer.class);
         if (value == null)
         {
             return 0;
@@ -112,7 +63,7 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     @Override
     public boolean getBoolean(String key)
     {
-        Boolean value = this.get(key, Boolean.class);
+        Boolean value = get(key, Boolean.class);
         if (value == null)
         {
             return false;
@@ -124,7 +75,7 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     @Override
     public double getDouble(String key)
     {
-        Double value = this.get(key, Double.class);
+        Double value = get(key, Double.class);
         if (value == null)
         {
             return 0.0;
@@ -136,7 +87,7 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     @Override
     public long getLong(String key)
     {
-        Long value = this.get(key, Long.class);
+        Long value = get(key, Long.class);
         if (value == null)
         {
             return 0L;

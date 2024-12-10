@@ -2,6 +2,7 @@ package com.github.rfsmassacre.heavenlibrary.paper.managers;
 
 import com.github.rfsmassacre.heavenlibrary.managers.YamlManager;
 import com.github.rfsmassacre.heavenlibrary.paper.HeavenLibraryPaper;
+import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperConfiguration;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -52,7 +55,7 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
     {
         if (!yaml.contains(key))
         {
-            return (defaultYaml).contains(key);
+            return defaultYaml.contains(key);
         }
 
         return true;
@@ -67,6 +70,55 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
         }
 
         return true;
+    }
+
+    @Override
+    protected <T> T get(String key, Class<T> clazz)
+    {
+        if (plugin instanceof HeavenLibraryPaper || this.hasKey(key))
+        {
+            return yaml.getObject(key, clazz, defaultYaml.getObject(key, clazz));
+        }
+
+        PaperConfiguration library = getLibraryYaml(PaperConfiguration.class);
+        if (library != null)
+        {
+            return library.get(key, clazz);
+        }
+
+        return null;
+    }
+
+    @Override
+    protected <T> List<T> getList(String key, Class<T> clazz)
+    {
+        List<T> list = new ArrayList<>();
+        List<?> rawList = null;
+        if (plugin instanceof HeavenLibraryPaper || hasList(key))
+        {
+            rawList = yaml.getList(key, defaultYaml.getList(key));
+        }
+        else
+        {
+            PaperConfiguration library = this.getLibraryYaml(PaperConfiguration.class);
+            if (library != null)
+            {
+                rawList = library.getList(key, clazz);
+            }
+        }
+
+        if (rawList != null)
+        {
+            for (Object object : rawList)
+            {
+                if (clazz.isInstance(object))
+                {
+                    list.add(clazz.cast(object));
+                }
+            }
+        }
+
+        return list;
     }
 
     /**

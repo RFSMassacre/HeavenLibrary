@@ -19,7 +19,6 @@ import java.util.Set;
 @SuppressWarnings("all")
 public class VelocityConfiguration extends VelocityYamlManager implements ConfigurationData<CommentedConfigurationNode>
 {
-
     /**
      * JavaPlugin and name of file will give back a fully updated YamlConfiguration.
      *
@@ -36,86 +35,6 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     }
 
     /**
-     * Provide easy function to reload configuration without needing parameters.
-     */
-    @Override
-    public void reload()
-    {
-        this.yaml = read();
-    }
-
-    @Override
-    public <T> T get(String key, Class<T> clazz) {
-
-        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
-        {
-            try
-            {
-                T t = this.yaml.node(splitKeys(key)).get(clazz, this.defaultYaml.node(splitKeys(key)).get(clazz));
-                if (t != null)
-                {
-                    return t;
-                }
-            }
-            catch (Exception exception)
-            {
-                return null;
-            }
-        }
-
-        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
-        if (library != null)
-        {
-            try
-            {
-                return library.get(key, clazz);
-            }
-            catch (Exception exception)
-            {
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public <T> List<T> getList(String key, Class<T> clazz)
-    {
-        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
-        {
-            try
-            {
-                List<T> list = this.yaml.node(splitKeys(key)).getList(clazz,
-                        this.defaultYaml.node(splitKeys(key)).getList(clazz));
-                if (list != null)
-                {
-                    return list;
-                }
-            }
-            catch (Exception exception)
-            {
-                return null;
-            }
-        }
-
-        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
-        if (library != null)
-        {
-            try
-            {
-                return library.getList(key, clazz);
-            }
-            catch (Exception exception)
-            {
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Retrieves String value from configuration.
      * @param key Key that the value is assigned to.
      * @return Value from config.
@@ -123,8 +42,7 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public String getString(String key)
     {
-        return Objects.requireNonNullElse(yaml.node(splitKeys(key)).getString(),
-                defaultYaml.node(splitKeys(key)).getString());
+        return get(key, String.class);
     }
 
     /**
@@ -135,8 +53,13 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public int getInt(String key)
     {
-        return Objects.requireNonNullElse(yaml.node(splitKeys(key)).getInt(),
-                defaultYaml.node(splitKeys(key)).getInt());
+        Integer value = get(key, Integer.class);
+        if (value == null)
+        {
+            return 0;
+        }
+
+        return value;
     }
 
     /**
@@ -147,8 +70,13 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public boolean getBoolean(String key)
     {
-        return Objects.requireNonNullElse(yaml.node(splitKeys(key)).getBoolean(),
-                defaultYaml.node(splitKeys(key)).getBoolean());
+        Boolean value = get(key, Boolean.class);
+        if (value == null)
+        {
+            return false;
+        }
+
+        return value;
     }
 
     /**
@@ -159,8 +87,13 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public double getDouble(String key)
     {
-        return Objects.requireNonNullElse(yaml.node(splitKeys(key)).getDouble(),
-                defaultYaml.node(splitKeys(key)).getDouble());
+        Double value = get(key, Double.class);
+        if (value == null)
+        {
+            return 0.0D;
+        }
+
+        return value;
     }
 
     /**
@@ -171,8 +104,13 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public long getLong(String key)
     {
-        return Objects.requireNonNullElse(yaml.node(splitKeys(key)).getLong(),
-                defaultYaml.node(splitKeys(key)).getLong());
+        Long value = get(key, Long.class);
+        if (value == null)
+        {
+            return 0L;
+        }
+
+        return value;
     }
 
     /**
@@ -183,26 +121,7 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public List<String> getStringList(String key)
     {
-        try
-        {
-            if (!yaml.node(key).isNull())
-            {
-                return yaml.node(splitKeys(key)).getList(String.class);
-            }
-
-            return defaultYaml.node(splitKeys(key)).getList(String.class);
-        }
-        catch (SerializationException exception)
-        {
-            try
-            {
-                return defaultYaml.node(splitKeys(key)).getList(String.class);
-            }
-            catch (SerializationException defaultException)
-            {
-                return null;
-            }
-        }
+        return getList(key, String.class);
     }
 
     /**
@@ -213,26 +132,7 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public List<Integer> getIntegerList(String key)
     {
-        try
-        {
-            if (!yaml.node(key).isNull())
-            {
-                return yaml.node(splitKeys(key)).getList(Integer.class);
-            }
-
-            return defaultYaml.node(splitKeys(key)).getList(Integer.class);
-        }
-        catch (SerializationException exception)
-        {
-            try
-            {
-                return defaultYaml.node(splitKeys(key)).getList(Integer.class);
-            }
-            catch (SerializationException defaultException)
-            {
-                return null;
-            }
-        }
+        return getList(key, Integer.class);
     }
 
     /**
@@ -243,26 +143,7 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public List<Double> getDoubleList(String key)
     {
-        try
-        {
-            if (!yaml.node(key).isNull())
-            {
-                return yaml.node(splitKeys(key)).getList(Double.class);
-            }
-
-            return defaultYaml.node(splitKeys(key)).getList(Double.class);
-        }
-        catch (SerializationException exception)
-        {
-            try
-            {
-                return defaultYaml.node(splitKeys(key)).getList(Double.class);
-            }
-            catch (SerializationException defaultException)
-            {
-                return null;
-            }
-        }
+        return getList(key, Double.class);
     }
 
     /**
@@ -273,26 +154,7 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     @Override
     public List<Long> getLongList(String key)
     {
-        try
-        {
-            if (!yaml.node(key).isNull())
-            {
-                return yaml.node(splitKeys(key)).getList(Long.class);
-            }
-
-            return defaultYaml.node(splitKeys(key)).getList(Long.class);
-        }
-        catch (SerializationException exception)
-        {
-            try
-            {
-                return defaultYaml.node(splitKeys(key)).getList(Long.class);
-            }
-            catch (SerializationException defaultException)
-            {
-                return null;
-            }
-        }
+        return getList(key, Long.class);
     }
 
     @Override
@@ -309,20 +171,14 @@ public class VelocityConfiguration extends VelocityYamlManager implements Config
     }
 
     @Override
-    protected <F extends YamlManager<CommentedConfigurationNode, ConfigurationNode>> F getLibraryYaml(Class<F> clazz)
-    {
-        return null;
-    }
-
-    @Override
     protected boolean hasKey(String key)
     {
-        return false;
+        return !yaml.node(splitKeys(key)).virtual() || !defaultYaml.node(splitKeys(key)).virtual();
     }
 
     @Override
     protected boolean hasList(String key)
     {
-        return false;
+        return yaml.node(splitKeys(key)).isList() || defaultYaml.node(splitKeys(key)).isList();
     }
 }
