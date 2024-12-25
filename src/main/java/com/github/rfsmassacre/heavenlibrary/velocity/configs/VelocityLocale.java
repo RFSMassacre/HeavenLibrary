@@ -38,6 +38,22 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
         super(plugin, folderName, fileName);
     }
 
+    protected String getPrefix()
+    {
+        String prefix = "";
+        if (!yaml.node("prefix").virtual())
+        {
+            prefix = yaml.node("prefix").getString();
+        }
+
+        if (prefix.isBlank() && !defaultYaml.node("prefix").virtual())
+        {
+            prefix = defaultYaml.node("prefix").getString();
+        }
+
+        return prefix;
+    }
+
     /**
      * Retrieve message from given key.
      *
@@ -48,19 +64,13 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
     @Override
     public String getMessage(String key, boolean usePrefix)
     {
-        String prefix = yaml.node("prefix").getString();
-        if (prefix == null)
-        {
-            prefix = defaultYaml.node("prefix").getString();
-        }
-
         String message = get(key, String.class);
         if (message == null || message.isBlank())
         {
             return null;
         }
 
-        return usePrefix ? prefix + message : message;
+        return usePrefix ? getPrefix() + message : message;
     }
 
     /**
@@ -73,13 +83,13 @@ public class VelocityLocale extends VelocityYamlManager implements LocaleData<Co
     @Override
     public void sendMessage(CommandSource receiver, boolean usePrefix, String message, String... holders)
     {
-        if (receiver == null)
+        if (receiver == null || message == null || message.isBlank())
         {
             return;
         }
 
-        String string = LocaleData.format(getMessage("", usePrefix) +
-                LocaleData.replaceHolders(message, holders));
+        String prefix = usePrefix ? getPrefix() : "";
+        String string = LocaleData.format(prefix + LocaleData.replaceHolders(message, holders));
         receiver.sendMessage(LegacyComponentSerializer.legacySection().deserialize(string));
     }
 

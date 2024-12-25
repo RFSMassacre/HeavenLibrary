@@ -2,6 +2,7 @@ package com.github.rfsmassacre.heavenlibrary.commands;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.ConfigurationData;
 import com.github.rfsmassacre.heavenlibrary.interfaces.LocaleData;
+import com.github.rfsmassacre.heavenlibrary.paper.commands.SimplePaperCommand;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -48,8 +49,8 @@ public abstract class HeavenCommand<T>
 
     protected void onInvalidArgs(T sender, String ... args)
     {
-        this.locale.sendLocale(sender, "invalid.args", "{command}", commandName +
-                (args.length > 0 ? " " + String.join(" ", args) : ""));
+        String fullArgs = args.length == 0 ? "" : " " + String.join(" ", args);
+        locale.sendLocale(sender, "invalid.command", "{command}", commandName + fullArgs);
     }
 
     protected List<String> onTabComplete(T sender, String[] args)

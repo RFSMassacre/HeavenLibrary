@@ -93,10 +93,14 @@ public abstract class Menu
             {
                 event.setCancelled(true);
                 ItemStack item = event.getCurrentItem();
+                if (item == null)
+                {
+                    return;
+                }
+
                 for (Icon icon : menu.getIcons().values())
                 {
-                    if ((icon.getItemStack().isSimilar(item)
-                        || icon.getItemStack().getType().equals(Material.PLAYER_HEAD))
+                    if ((icon.getItemStack().isSimilar(item) || icon.getItemStack().getType().equals(item.getType()))
                         && icon.getSlot() == event.getSlot())
                     {
                         icon.onClick(player);
@@ -137,7 +141,7 @@ public abstract class Menu
     {
         //Retrieve the menu if it's the same inventory
         Inventory inventory = Bukkit.createInventory(null, rows * 9,
-                Component.text(LocaleData.format(title)));
+                LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(title)));
 
         //Add and place all the items.
         updateIcons(player);
@@ -178,8 +182,7 @@ public abstract class Menu
         return inventoryTitle.equals(title);
     }
 
-    public void divideIcons(List<Icon> iconList, int iconLimit, int leftY, int rightY, int topX,
-            int bottomX)
+    public void divideIcons(List<Icon> iconList, int iconLimit, int leftY, int rightY, int topX, int bottomX)
     {
         List<List<Icon>> pages = Lists.partition(iconList, iconLimit);
         if (!pages.isEmpty())

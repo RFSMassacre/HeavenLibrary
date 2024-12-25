@@ -24,3 +24,4 @@ command-sound:
 #If enabled, it will download the driver and load them on HeavenLibrary's start up.
 drivers:
   mysql: true
+  sqlite: true

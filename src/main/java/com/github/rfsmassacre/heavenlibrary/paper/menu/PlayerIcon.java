@@ -45,6 +45,7 @@ public class PlayerIcon extends Icon
         SkullMeta meta = (SkullMeta)item.getItemMeta();
         meta.displayName(LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(displayName)));
         meta.setOwningPlayer(target);
+        meta.lore(getComponentLore());
         item.setItemMeta(meta);
         return item;
     }

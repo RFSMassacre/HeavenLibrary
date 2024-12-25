@@ -3,6 +3,7 @@ package com.github.rfsmassacre.heavenlibrary.paper.menu;
 import com.github.rfsmassacre.heavenlibrary.interfaces.LocaleData;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -59,12 +60,12 @@ public abstract class Icon
         }
     }
 
-    private List<Component> getComponentLore()
+    protected List<Component> getComponentLore()
     {
         List<Component> components = new ArrayList<>();
         for (String line : lore)
         {
-            components.add(Component.text(LocaleData.format(line)));
+            components.add(LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(line)));
         }
 
         return components;
@@ -79,7 +80,7 @@ public abstract class Icon
             return item;
         }
 
-        meta.displayName(Component.text(displayName));
+        meta.displayName(LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(displayName)));
         meta.lore(getComponentLore());
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         if (glowing)

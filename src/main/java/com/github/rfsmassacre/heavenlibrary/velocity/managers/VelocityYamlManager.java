@@ -75,36 +75,26 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
     @Override
     protected boolean hasKey(String key)
     {
-        if (this.yaml.node(splitKeys(key)).virtual())
-        {
-            return this.defaultYaml.node(splitKeys(key)).virtual();
-        }
-
-        return false;
+        return !yaml.node(splitKeys(key)).virtual() || !defaultYaml.node(splitKeys(key)).virtual();
     }
 
     @Override
     protected boolean hasList(String key)
     {
-        if (!this.yaml.node(splitKeys(key)).isList())
-        {
-            return this.defaultYaml.node(splitKeys(key)).isList();
-        }
-
-        return true;
+        return yaml.node(splitKeys(key)).isList() || defaultYaml.node(splitKeys(key)).isList();
     }
 
     @Override
     protected <T> T get(String key, Class<T> clazz)
     {
-        if (plugin instanceof HeavenLibraryVelocity || this.hasKey(key))
+        if (plugin instanceof HeavenLibraryVelocity || hasKey(key))
         {
             try
             {
-                T t = this.yaml.node(splitKeys(key)).get(clazz);
+                T t = yaml.node(splitKeys(key)).get(clazz);
                 if (t == null)
                 {
-                    t = this.defaultYaml.node(splitKeys(key)).get(clazz);
+                    this.defaultYaml.node(splitKeys(key)).get(clazz);
                 }
 
                 return t;
@@ -115,7 +105,7 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
             }
         }
 
-        VelocityConfiguration library = this.getLibraryYaml(VelocityConfiguration.class);
+        VelocityYamlManager library = this.getLibraryYaml(VelocityYamlManager.class);
         if (library != null)
         {
             try
@@ -302,34 +292,40 @@ public abstract class VelocityYamlManager extends YamlManager<CommentedConfigura
             String key = object.toString();
             if (child.isMap())
             {
-                // Handle nested sections
-                ConfigurationNode destinationChild = destination.node(key);
+                ConfigurationNode destinationChild = destination.node(splitKeys(key));
                 copySection(child, destinationChild, null);
+                continue;
             }
-            else
+
+            if (!destination.node(splitKeys(key)).virtual())
             {
-                // Only copy value if destination does not already contain it
-                if (destination.node(key).virtual())
+                continue;
+            }
+
+            try
+            {
+                destination.node(new Object[]{key}).set(child.raw());
+                if (!(child instanceof CommentedConfigurationNode commentedSource))
                 {
-                    try
-                    {
-                        destination.node(key).set(child.raw());
-                        if (child instanceof CommentedConfigurationNode commentedSource &&
-                                destination instanceof CommentedConfigurationNode commentedDestination)
-                        {
-                            // Copy comments if present
-                            String comment = commentedSource.comment();
-                            if (comment != null)
-                            {
-                                commentedDestination.node(key).comment(comment);
-                            }
-                        }
-                    }
-                    catch (SerializationException exception)
-                    {
-                        //Do nothing
-                    }
+                    continue;
                 }
+
+                if (!(destination instanceof CommentedConfigurationNode commentedDestination))
+                {
+                    continue;
+                }
+
+                String comment = commentedSource.comment();
+                if (comment == null)
+                {
+                    continue;
+                }
+
+                commentedDestination.node(commentedDestination).comment(comment);
+            }
+            catch (SerializationException exception)
+            {
+                //Do nothing
             }
         }
     }

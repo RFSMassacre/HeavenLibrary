@@ -31,7 +31,7 @@ public abstract class GsonManager<T> implements MultiFileData<T>
      */
     public GsonManager(File dataFolder, String folderName, Class<T> clazz)
     {
-        this.folder = new File(dataFolder + "/" + folderName);
+        this.folder = new File(dataFolder + File.separator + folderName);
         folder.mkdirs();
         this.clazz = clazz;
         this.adapters = new HashSet<>();

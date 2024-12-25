@@ -8,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,23 +54,13 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
     @Override
     protected boolean hasKey(String key)
     {
-        if (!yaml.contains(key))
-        {
-            return defaultYaml.contains(key);
-        }
-
-        return true;
+        return yaml.contains(key) || defaultYaml.contains(key);
     }
 
     @Override
     protected boolean hasList(String key)
     {
-        if (!yaml.isList(key))
-        {
-            return defaultYaml.isList(key);
-        }
-
-        return true;
+        return yaml.isList(key) || defaultYaml.isList(key);
     }
 
     @Override
@@ -80,7 +71,7 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
             return yaml.getObject(key, clazz, defaultYaml.getObject(key, clazz));
         }
 
-        PaperConfiguration library = getLibraryYaml(PaperConfiguration.class);
+        PaperYamlManager library = getLibraryYaml(PaperYamlManager.class);
         if (library != null)
         {
             return library.get(key, clazz);
@@ -100,7 +91,7 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
         }
         else
         {
-            PaperConfiguration library = this.getLibraryYaml(PaperConfiguration.class);
+            PaperYamlManager library = this.getLibraryYaml(PaperYamlManager.class);
             if (library != null)
             {
                 rawList = library.getList(key, clazz);
@@ -171,33 +162,25 @@ public abstract class PaperYamlManager extends YamlManager<FileConfiguration, Co
     {
         for (String key : source.getKeys(false))
         {
-            String fullPath = (path == null ? key : path + "." + key);
-
-            if (source.isConfigurationSection(key))
+            ConfigurationSection sourceSection = source.getConfigurationSection(key);
+            if (sourceSection != null)
             {
-                // If the key is a section, recurse into it
-                ConfigurationSection sourceSection = source.getConfigurationSection(key);
-                if (sourceSection == null)
-                {
-                    continue;
-                }
-
                 ConfigurationSection destinationSection = destination.getConfigurationSection(key);
                 if (destinationSection == null)
                 {
                     destinationSection = destination.createSection(key);
                 }
 
-                copySection(sourceSection, destinationSection, fullPath);
+                copySection(sourceSection, destinationSection, null);
+                continue;
             }
-            else
+
+            if (destination.contains(key) && destination.get(key) != null)
             {
-                // Copy only if the key does not exist or is null in the destination
-                if (!destination.contains(fullPath) || destination.get(fullPath) == null)
-                {
-                    destination.set(fullPath, source.get(key));
-                }
+                continue;
             }
+
+            destination.set(key, source.get(key));
         }
     }
 

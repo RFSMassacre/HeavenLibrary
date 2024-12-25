@@ -59,7 +59,8 @@ public abstract class SimplePaperCommand extends HeavenCommand<CommandSender> im
     @Override
     protected void onInvalidArgs(CommandSender sender, String... args)
     {
-        locale.sendLocale(sender, "invalid.command", "{command}", commandName);
+        String fullArgs = args.length == 0 ? "" : " " + String.join(" ", args);
+        locale.sendLocale(sender, "invalid.command", "{command}", commandName + fullArgs);
         playSound(sender, SoundKey.INVALID_ARGS);
     }
 

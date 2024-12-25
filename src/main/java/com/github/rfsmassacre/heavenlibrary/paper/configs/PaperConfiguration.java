@@ -36,7 +36,7 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     {
         if (this.plugin instanceof HeavenLibraryPaper || this.hasKey(key))
         {
-            return this.yaml.getString(key,defaultYaml.getString(key));
+            return this.yaml.getString(key, defaultYaml.getString(key));
         }
 
         PaperConfiguration library = this.getLibraryYaml(PaperConfiguration.class);

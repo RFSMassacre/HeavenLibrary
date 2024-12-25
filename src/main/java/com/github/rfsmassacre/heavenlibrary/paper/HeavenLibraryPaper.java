@@ -2,6 +2,7 @@ package com.github.rfsmassacre.heavenlibrary.paper;
 
 import com.github.rfsmassacre.heavenlibrary.databases.MySQLDatabase;
 import com.github.rfsmassacre.heavenlibrary.databases.SQLDatabase;
+import com.github.rfsmassacre.heavenlibrary.databases.SQLiteDatabase;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperConfiguration;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperLocale;
 import com.github.rfsmassacre.heavenlibrary.paper.menu.Menu;
@@ -31,6 +32,12 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
         {
             SQLDatabase.setupDrivers(driverFolder, MySQLDatabase.DRIVER, MySQLDatabase.DRIVER_URL,
                     MySQLDatabase.CLASS_NAME);
+        }
+
+        if (driverEnabled("sqlite"))
+        {
+            SQLDatabase.setupDrivers(driverFolder, SQLiteDatabase.DRIVER, SQLiteDatabase.DRIVER_URL,
+                    SQLiteDatabase.CLASS_NAME);
         }
 
         getServer().getPluginManager().registerEvents(new Menu.MenuListener(), this);
