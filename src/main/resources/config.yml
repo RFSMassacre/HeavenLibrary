@@ -25,3 +25,6 @@ command-sound:
 drivers:
   mysql: true
   sqlite: true
+
+threads:
+  gui: 5

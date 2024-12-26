@@ -6,6 +6,8 @@ import com.github.rfsmassacre.heavenlibrary.databases.SQLiteDatabase;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperConfiguration;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperLocale;
 import com.github.rfsmassacre.heavenlibrary.paper.menu.Menu;
+import com.github.rfsmassacre.heavenlibrary.paper.utils.LibraryTaskUtil;
+import com.github.rfsmassacre.heavenlibrary.paper.utils.PaperTaskUtil;
 import lombok.Getter;
 
 import java.io.File;
@@ -13,10 +15,13 @@ import java.io.File;
 /**
  * Do not use this file in your implementation.
  */
+@Getter
 public final class HeavenLibraryPaper extends HeavenPaperPlugin
 {
     @Getter
     private static HeavenLibraryPaper instance;
+
+    private PaperTaskUtil taskUtil;
 
     @Override
     public void onEnable()
@@ -41,6 +46,8 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
         }
 
         getServer().getPluginManager().registerEvents(new Menu.MenuListener(), this);
+        this.taskUtil = new LibraryTaskUtil();
+        taskUtil.startTimers();
     }
 
     private boolean driverEnabled(String sqlType)
