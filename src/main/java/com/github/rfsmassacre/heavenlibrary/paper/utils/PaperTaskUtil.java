@@ -13,6 +13,12 @@ public abstract class PaperTaskUtil extends HeavenTaskUtil<HeavenPaperPlugin, Bu
     }
 
     @Override
+    public void run(Runnable runnable)
+    {
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, runnable);
+    }
+
+    @Override
     public void runAsync(Runnable runnable)
     {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, runnable);
@@ -33,7 +39,7 @@ public abstract class PaperTaskUtil extends HeavenTaskUtil<HeavenPaperPlugin, Bu
     @Override
     protected long getLong(String key)
     {
-        return plugin.getConfiguration().getLong("threads." + key);
+        return plugin.getConfiguration().getInt("threads." + key);
     }
 
     @Override

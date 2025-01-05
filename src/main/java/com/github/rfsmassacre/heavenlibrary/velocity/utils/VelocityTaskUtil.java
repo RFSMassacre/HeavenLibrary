@@ -14,6 +14,12 @@ public abstract class VelocityTaskUtil extends HeavenTaskUtil<HeavenVelocityPlug
     }
 
     @Override
+    public void run(Runnable runnable)
+    {
+        runAsync(runnable);
+    }
+
+    @Override
     public void runAsync(Runnable runnable)
     {
         plugin.getServer().getScheduler().buildTask(this.plugin, runnable).schedule();

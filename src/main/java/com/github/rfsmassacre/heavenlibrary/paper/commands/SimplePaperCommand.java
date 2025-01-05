@@ -112,6 +112,6 @@ public abstract class SimplePaperCommand extends HeavenCommand<CommandSender> im
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
                                                 @NotNull String label, @NotNull String[] strings)
     {
-        return Collections.emptyList();
+        return onTabComplete(sender, strings);
     }
 }

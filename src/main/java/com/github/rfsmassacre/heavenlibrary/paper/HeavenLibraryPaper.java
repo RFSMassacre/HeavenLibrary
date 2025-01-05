@@ -7,7 +7,6 @@ import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperConfiguration;
 import com.github.rfsmassacre.heavenlibrary.paper.configs.PaperLocale;
 import com.github.rfsmassacre.heavenlibrary.paper.menu.Menu;
 import com.github.rfsmassacre.heavenlibrary.paper.utils.LibraryTaskUtil;
-import com.github.rfsmassacre.heavenlibrary.paper.utils.PaperTaskUtil;
 import lombok.Getter;
 
 import java.io.File;
@@ -21,7 +20,7 @@ public final class HeavenLibraryPaper extends HeavenPaperPlugin
     @Getter
     private static HeavenLibraryPaper instance;
 
-    private PaperTaskUtil taskUtil;
+    private LibraryTaskUtil taskUtil;
 
     @Override
     public void onEnable()

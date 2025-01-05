@@ -12,6 +12,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.xml.stream.events.Namespace;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public abstract class HeavenItem
     @Getter
     protected String displayName;
     @Getter
-    protected final List<String> defaultLore;
+    protected List<String> defaultLore;
     @Getter
     protected NamespacedKey key;
     @Getter
@@ -50,7 +51,6 @@ public abstract class HeavenItem
 
         //NBT
         setNBT(this.key, this.name);
-
         this.recipe = createRecipe();
     }
 
@@ -86,6 +86,18 @@ public abstract class HeavenItem
         PersistentDataContainer data = meta.getPersistentDataContainer();
         return data.get(key, PersistentDataType.STRING);
     }
+    public void removeNBT(NamespacedKey key)
+    {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null)
+        {
+            return;
+        }
+
+        PersistentDataContainer data = meta.getPersistentDataContainer();
+        data.remove(key);
+        item.setItemMeta(meta);
+    }
 
     public boolean equals(ItemStack itemStack)
     {
@@ -113,6 +125,7 @@ public abstract class HeavenItem
             return;
         }
 
+        this.displayName = displayName;
         meta.displayName(Component.text(displayName));
         item.setItemMeta(meta);
     }

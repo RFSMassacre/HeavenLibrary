@@ -14,7 +14,9 @@ public abstract class HeavenTaskUtil<T, X, R>
         this.tasks = new HashSet<>();
     }
 
-    public abstract void runAsync(Runnable var1);
+    public abstract void run(Runnable runnable);
+
+    public abstract void runAsync(Runnable runnable);
 
     public abstract void startTimer(R runnable, long delay, long interval);
 

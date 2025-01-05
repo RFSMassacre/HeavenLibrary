@@ -9,25 +9,30 @@ import java.util.*;
 @SuppressWarnings({"unused", "ResultOfMethodCallIgnored", "CallToPrintStackTrace"})
 public abstract class TextManager implements MultiFileData<List<String>>
 {
-    private final File folder;
-    private final Map<String, List<String>> cache;
+    protected final String folderName;
+    protected final File folder;
+    protected final Map<String, List<String>> defaultCache;
+    protected final Map<String, List<String>> cache;
 
     public TextManager(File dataFolder, String folderName)
     {
+        this.folderName = folderName;
         this.folder = new File(dataFolder + File.separator + folderName);
         if (!folder.exists())
         {
             folder.mkdirs();
         }
 
+        this.defaultCache = new HashMap<>();
         this.cache = new HashMap<>();
-        loadTexts();
     }
 
     public List<String> getText(String fileName)
     {
         return cache.get(fileName);
     }
+
+    public abstract void loadDefaultTexts();
 
     public void loadTexts()
     {
