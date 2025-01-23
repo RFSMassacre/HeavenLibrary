@@ -164,7 +164,7 @@ public class ExampleCommand extends VelocityCommand
     
     private class ExampleSubCommand extends VelocitySubCommand
     {
-        public CurrentListCommand()
+        public ExampleSubCommand()
         {
             super("command");
         }
