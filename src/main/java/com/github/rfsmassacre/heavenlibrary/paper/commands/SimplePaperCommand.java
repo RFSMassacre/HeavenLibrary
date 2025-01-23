@@ -86,10 +86,17 @@ public abstract class SimplePaperCommand extends HeavenCommand<CommandSender> im
             return;
         }
 
-        Sound sound = Sound.valueOf(config.getString("command-sound." + key.getKey() + ".sound"));
-        float volume = (float) config.getDouble("command-sound." + key.getKey() + ".volume");
-        float pitch = (float) config.getDouble("command-sound." + key.getKey() + ".pitch");
-        player.playSound(player, sound, volume, pitch);
+        try
+        {
+            Sound sound = Sound.valueOf(config.getString("command-sound." + key.getKey() + ".sound"));
+            float volume = (float) config.getDouble("command-sound." + key.getKey() + ".volume");
+            float pitch = (float) config.getDouble("command-sound." + key.getKey() + ".pitch");
+            player.playSound(player, sound, volume, pitch);
+        }
+        catch (Exception exception)
+        {
+            //Do nothing.
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.github.rfsmassacre.heavenlibrary.paper.menu;
 
 import com.github.rfsmassacre.heavenlibrary.interfaces.LocaleData;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -42,10 +43,11 @@ public class PlayerIcon extends Icon
     public ItemStack getItemStack()
     {
         ItemStack item = new ItemStack(material, amount);
-        SkullMeta meta = (SkullMeta)item.getItemMeta();
-        meta.displayName(LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(displayName)));
-        meta.setOwningPlayer(target);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.displayName(LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(displayName))
+                        .decoration(TextDecoration.ITALIC, false));
         meta.lore(getComponentLore());
+        meta.setOwningPlayer(target);
         item.setItemMeta(meta);
         return item;
     }

@@ -133,7 +133,7 @@ public class ExampleCommand extends PaperCommand
         }
         
         @Override
-        protected void onRun(CommandSender sender, String[] args)
+        protected void onRun(CommandSender sender, String... args)
         {
             //Do something.
         }
@@ -170,7 +170,7 @@ public class ExampleCommand extends VelocityCommand
         }
 
         @Override
-        protected void onRun(CommandSource sender, String[] args)
+        protected void onRun(CommandSource sender, String... args)
         {
             //Do something.
         }
@@ -183,7 +183,7 @@ public class ExampleCommand extends VelocityCommand
          * @return List of suggestions.
          */
         @Override
-        public List<String> onTabComplete(CommandSource sender, String[] args)
+        public List<String> onTabComplete(CommandSource sender, String... args)
         {
             //Make sure to actually give the auto-completed arguments you need.
             return Collections.emptyList();
