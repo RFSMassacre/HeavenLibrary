@@ -7,11 +7,13 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
+import java.util.Arrays;
 
 /**
  * Handles retrieving all the values from a locale file.
@@ -96,15 +98,26 @@ public class PaperLocale extends PaperYamlManager implements LocaleData<CommandS
         receiver.showTitle(titleMessage);
     }
 
+    public void sendTitleLocale(Player receiver, int fadeIn, int stay, int fadeOut, String titleKey, String subtitleKey,
+                                String... holders)
+    {
+        sendTitleMessage(receiver, fadeIn, stay, fadeOut, getMessage(titleKey), getMessage(subtitleKey), holders);
+    }
+
     @Override
     public Component toComponent(String hover, String message, String... holders)
     {
+        if (message == null)
+        {
+            return Component.text().build();
+        }
+
         String string = LocaleData.format(LocaleData.replaceHolders(message, holders));
         TextComponent text = LegacyComponentSerializer.legacySection().deserialize(string);
         if (hover != null)
         {
             text = text.hoverEvent(HoverEvent.showText(LegacyComponentSerializer.legacySection()
-                    .deserialize(LocaleData.format(hover))));
+                    .deserialize(LocaleData.format(LocaleData.replaceHolders(hover, holders)))));
         }
 
         return text;
