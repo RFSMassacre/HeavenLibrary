@@ -86,28 +86,29 @@ public abstract class Menu
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onMenuClick(InventoryClickEvent event)
         {
-            Player player = (Player)event.getWhoClicked();
-            String title = player.getOpenInventory().getTitle();
-            Menu menu = Menu.getView(player.getUniqueId());
-            if (menu != null && menu.getTitle().equals(title))
+            Player player = (Player) event.getWhoClicked();
+            Menu menu = getView(player.getUniqueId());
+            if (menu == null || !menu.inInventory(player))
             {
-                event.setCancelled(true);
-                ItemStack item = event.getCurrentItem();
-                if (item == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                for (Icon icon : menu.getIcons().values())
-                {
-                    if ((icon.getItemStack().isSimilar(item) || icon.getItemStack().getType().equals(item.getType()))
+            event.setCancelled(true);
+            ItemStack item = event.getCurrentItem();
+            if (item == null)
+            {
+                return;
+            }
+
+            for (Icon icon : menu.getIcons().values())
+            {
+                if ((icon.getItemStack().isSimilar(item) || icon.getItemStack().getType().equals(item.getType()))
                         && icon.getSlot() == event.getSlot())
-                    {
-                        icon.onClick(player);
-                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK,
-                                0.5F, 1.0F);
-                        break;
-                    }
+                {
+                    icon.onClick(player);
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK,
+                            0.5F, 1.0F);
+                    break;
                 }
             }
         }
@@ -155,31 +156,29 @@ public abstract class Menu
 
     public void updateInventory(Player player)
     {
-        String inventoryTitle = LegacyComponentSerializer.legacySection().serialize(player.getOpenInventory().title());
-        inventoryTitle = LocaleData.format(inventoryTitle);
-        if (inventoryTitle.equals(title))
+        if (!inInventory(player))
         {
-            Inventory inventory = player.getOpenInventory().getTopInventory();
-            for (Icon icon : new ArrayList<>(icons.values()))
-            {
-                inventory.remove(icon.getItemStack());
-                icons.remove(icon.getSlot());
-            }
+            return;
+        }
 
-            //Add and place all the items.
-            updateIcons(player);
-            for (Icon icon : icons.values())
-            {
-                inventory.setItem(icon.getSlot(), icon.getItemStack());
-            }
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        for (Icon icon : new ArrayList<>(icons.values()))
+        {
+            inventory.remove(icon.getItemStack());
+            icons.remove(icon.getSlot());
+        }
+
+        //Add and place all the items.
+        updateIcons(player);
+        for (Icon icon : icons.values())
+        {
+            inventory.setItem(icon.getSlot(), icon.getItemStack());
         }
     }
 
     public boolean inInventory(Player player)
     {
-        String inventoryTitle = LegacyComponentSerializer.legacySection().serialize(player.getOpenInventory().title());
-        inventoryTitle = LocaleData.format(inventoryTitle);
-        return inventoryTitle.equals(title);
+        return player.getOpenInventory().getTitle().equals(title);
     }
 
     public void divideIcons(List<Icon> iconList, int iconLimit, int leftY, int rightY, int topX, int bottomX)

@@ -48,6 +48,7 @@ public class PlayerIcon extends Icon
                         .decoration(TextDecoration.ITALIC, false));
         meta.lore(getComponentLore());
         meta.setOwningPlayer(target);
+        meta.setEnchantmentGlintOverride(glowing);
         item.setItemMeta(meta);
         return item;
     }

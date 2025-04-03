@@ -20,7 +20,7 @@ public abstract class SimpleVelocityCommand extends HeavenCommand<CommandSource>
     @Override
     public void execute(Invocation invocation)
     {
-        if (hasPermission(invocation))
+        if (hasPermission(invocation.source()))
         {
             onRun(invocation.source(), invocation.arguments());
         }

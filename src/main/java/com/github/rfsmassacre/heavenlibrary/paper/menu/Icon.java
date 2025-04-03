@@ -22,20 +22,27 @@ public abstract class Icon
     protected int x; //Between 1 and 9.
     protected int y; //Between 1 and 6 depending on the size of the GUI.
     protected int amount;
+    protected int customModelData;
     protected boolean glowing;
     protected Material material;
     protected String displayName;
     protected List<String> lore;
 
-    public Icon(int x, int y, int amount, boolean glowing, Material material, String displayName, List<String> lore)
+    public Icon(int x, int y, int amount, int customModelData, boolean glowing, Material material, String displayName, List<String> lore)
     {
         this.x = x;
         this.y = y;
         this.amount = amount;
+        this.customModelData = customModelData;
         this.glowing = glowing;
         this.material = material;
         setDisplayName(displayName);
         setLore(lore);
+    }
+
+    public Icon(int x, int y, int amount, boolean glowing, Material material, String displayName, List<String> lore)
+    {
+        this(x, y, amount, 0, glowing, material, displayName, lore);
     }
 
     public int getSlot()
@@ -86,6 +93,7 @@ public abstract class Icon
         meta.displayName(LegacyComponentSerializer.legacySection().deserialize(LocaleData.format(displayName))
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(getComponentLore());
+        meta.setCustomModelData(customModelData);
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         if (glowing)
         {

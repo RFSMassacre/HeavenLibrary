@@ -5,7 +5,7 @@ HeavenLibrary is a Minecraft Java server plugin library that aims to make it sim
 You can quickly download an artifact from a commit if you don't know how to compile the source code. Check it out [here](https://github.com/RFSMassacre/HeavenLibrary/actions/workflows/maven-publish.yml?query=branch%3Amaster+is%3Asuccess)!
 
 ## JavaDocs
-Java Documentation can be found [here](https://maven.heavenreborn.com/javadoc/snapshots/com/github/rfsmassacre/HeavenLibrary/1.0-SNAPSHOT).
+Java Documentation can be found [here](https://maven.heavenreborn.com/javadoc/snapshots/com/github/rfsmassacre/HeavenLibrary/1.0.1-SNAPSHOT).
 
 ## Contributing
 I'm always looking for others to add more features or implementations to other Minecraft Java server platforms. Pull requests and forks are welcome!
@@ -21,7 +21,7 @@ Add this your pom.xml file and it should import to your project.
 <dependency>
     <groupId>com.github.rfsmassacre</groupId>
     <artifactId>HeavenLibrary</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
 ```

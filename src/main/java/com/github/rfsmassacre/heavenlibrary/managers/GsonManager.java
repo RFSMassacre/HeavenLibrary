@@ -214,7 +214,15 @@ public abstract class GsonManager<T> implements MultiFileData<T>
 
         for (File file : files)
         {
-            all.add(read(file.getName()));
+            try
+            {
+                all.add(read(file.getName()));
+            }
+            catch (Exception exception)
+            {
+                //If it fails, assume the data is invalid and delete it.
+                file.delete();
+            }
         }
 
         return all;

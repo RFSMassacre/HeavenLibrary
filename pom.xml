@@ -6,18 +6,67 @@
 
     <groupId>com.github.rfsmassacre</groupId>
     <artifactId>HeavenLibrary</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     <name>HeavenLibrary</name>
 
+    <profiles>
+        <profile>
+            <id>master</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>git.branch</name>
+                    <value>master</value>
+                </property>
+            </activation>
+            <properties>
+                <!--suppress UnresolvedMavenProperty -->
+                <profile.finalName>${project.artifactId}-${project.version}-${git.commit.id.abbrev}</profile.finalName>
+                <deploy.branch>master</deploy.branch>
+                <deploy.remote>origin</deploy.remote>
+            </properties>
+        </profile>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>git.branch</name>
+                    <value>release</value>
+                </property>
+            </activation>
+            <properties>
+                <profile.finalName>${project.artifactId}-${project.version}</profile.finalName>
+                <deploy.branch>release</deploy.branch>
+                <deploy.remote>origin</deploy.remote>
+            </properties>
+        </profile>
+        <profile>
+            <id>snapshot</id>
+            <activation>
+                <property>
+                    <name>git.branch</name>
+                    <value>snapshot</value>
+                </property>
+            </activation>
+            <properties>
+                <profile.finalName>${project.artifactId}-${project.version}-SNAPSHOT</profile.finalName>
+                <deploy.branch>snapshot</deploy.branch>
+                <deploy.remote>origin</deploy.remote>
+            </properties>
+        </profile>
+    </profiles>
+
     <distributionManagement>
         <repository>
-            <id>heavenreborn</id>
-            <url>https://maven.heavenreborn.com/releases</url>
+            <id>repsy-releases</id>
+            <name>My Public Maven Repository on Repsy</name>
+            <url>https://repo.repsy.io/mvn/rfsmassacre/releases</url>
         </repository>
         <snapshotRepository>
-            <id>heavenreborn</id>
-            <url>https://maven.heavenreborn.com/snapshots</url>
+            <id>repsy-default</id>
+            <name>My Private Maven Repository on Repsy</name>
+            <url>https://repo.repsy.io/mvn/rfsmassacre/default</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -28,6 +77,8 @@
 
     <build>
         <defaultGoal>clean package</defaultGoal>
+        <!--suppress UnresolvedMavenProperty -->
+        <finalName>${profile.finalName}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,12 +90,52 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>5.0.1</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.build.(time|version)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.commit.id.(abbrev|full)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                    </includeOnlyProperties>
+                    <commitIdGenerationMode>full</commitIdGenerationMode>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>filter-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <filters>
+                                <filter>${project.build.directory}/git.properties</filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
-                <configuration>
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
-                </configuration>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -53,18 +144,21 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.8.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <outputFile>${project.build.directory}/${project.build.finalName}.jar</outputFile>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -96,25 +190,25 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.1-R0.1-SNAPSHOT</version>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>LATEST</version>
+            <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>LATEST</version>
+            <version>2.12.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <version>LATEST</version>
+            <version>1.13.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
