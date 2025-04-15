@@ -6,7 +6,7 @@
 
     <groupId>com.github.rfsmassacre</groupId>
     <artifactId>HeavenLibrary</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
     <name>HeavenLibrary</name>
 
@@ -59,12 +59,12 @@
 
     <distributionManagement>
         <repository>
-            <id>repsy-releases</id>
+            <id>repsy</id>
             <name>My Public Maven Repository on Repsy</name>
             <url>https://repo.repsy.io/mvn/rfsmassacre/releases</url>
         </repository>
         <snapshotRepository>
-            <id>repsy-default</id>
+            <id>repsy</id>
             <name>My Private Maven Repository on Repsy</name>
             <url>https://repo.repsy.io/mvn/rfsmassacre/default</url>
         </snapshotRepository>

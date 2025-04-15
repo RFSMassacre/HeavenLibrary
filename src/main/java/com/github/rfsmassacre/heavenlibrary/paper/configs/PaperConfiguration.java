@@ -32,7 +32,7 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
     }
 
     @Override
-    public String getString(String key)
+    public String getString(String key, String defaultValue)
     {
         if (this.plugin instanceof HeavenLibraryPaper || this.hasKey(key))
         {
@@ -45,52 +45,52 @@ public class PaperConfiguration extends PaperYamlManager implements Configuratio
             return library.getString(key);
         }
 
-        return null;
+        return defaultValue;
     }
 
     @Override
-    public int getInt(String key)
+    public int getInt(String key, int defaultValue)
     {
         Integer value = get(key, Integer.class);
         if (value == null)
         {
-            return 0;
+            return defaultValue;
         }
 
         return value;
     }
 
     @Override
-    public boolean getBoolean(String key)
+    public boolean getBoolean(String key, boolean defaultValue)
     {
         Boolean value = get(key, Boolean.class);
         if (value == null)
         {
-            return false;
+            return defaultValue;
         }
 
         return value;
     }
 
     @Override
-    public double getDouble(String key)
+    public double getDouble(String key, double defaultValue)
     {
         Double value = get(key, Double.class);
         if (value == null)
         {
-            return 0.0;
+            return defaultValue;
         }
 
         return value;
     }
 
     @Override
-    public long getLong(String key)
+    public long getLong(String key, long defaultValue)
     {
         Long value = get(key, Long.class);
         if (value == null)
         {
-            return 0L;
+            return defaultValue;
         }
 
         return value;
